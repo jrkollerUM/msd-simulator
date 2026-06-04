@@ -469,13 +469,14 @@ function drawAnimation(xPhys, nowSec) {
   const massX = physToCanvasX(xPhys, L);   // left edge of mass
   const massCX = massX + L.massW / 2;
 
-  // Equilibrium dashed line
+  // Equilibrium dashed line — aligned with mass center at rest
   ctx.strokeStyle = COLORS.eq;
   ctx.lineWidth   = 1 * L.dpr;
   ctx.setLineDash([4 * L.dpr, 4 * L.dpr]);
   ctx.beginPath();
-  ctx.moveTo(L.eqX, L.pad.t);
-  ctx.lineTo(L.eqX, L.pad.t + (L.H - L.pad.t - L.pad.b));
+  const eqLineX = L.eqX + L.massW / 2;
+  ctx.moveTo(eqLineX, L.pad.t);
+  ctx.lineTo(eqLineX, L.pad.t + (L.H - L.pad.t - L.pad.b));
   ctx.stroke();
   ctx.setLineDash([]);
 
