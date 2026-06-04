@@ -11,7 +11,7 @@ Open `index.html` directly in a browser — no build step, no server, no depende
 This is a single-page static app with three files and no framework:
 
 - **`index.html`** — layout only. Two-column structure: `#sidebar` (controls) + `#vis-panel` (three stacked `<canvas>` elements with IDs `anim-canvas`, `plot-canvas`, `poles-canvas`). All input IDs follow the pattern `r1-*` / `r2-*` (e.g. `r1-m`, `r2-x0`).
-- **`style.css`** — dark theme using CSS custom properties in `:root`. All sizing uses `devicePixelRatio`-scaled values handled in JS, not CSS, so canvas CSS size ≠ canvas pixel size.
+- **`style.css`** — minimalist white/light-gray theme using CSS custom properties in `:root` (UMich colors: R1=Maize `#FFCB05`, R2=Blue `#00274C`). All sizing uses `devicePixelRatio`-scaled values handled in JS, not CSS, so canvas CSS size ≠ canvas pixel size.
 - **`simulation.js`** — everything else. No modules; runs in a single script scope.
 
 ### Data flow in `simulation.js`
@@ -33,6 +33,14 @@ Uses closed-form analytical solutions (no ODE solver). Three branches keyed on `
 
 Time vector is pre-sampled at 60 Hz (`FPS = 60`, `DT = 1/FPS`). `computeResponse` returns `Float64Array`s of length `ceil(tend * FPS) + 1`.
 
+Physical parameter limits (enforced in both HTML and `getParams()`):
+- **m**: 0.01–100 kg
+- **k**: 0.1–50,000 N/m  
+- **c**: 0–10,000 N·s/m
+- **x₀**: ±10 m
+- **v₀**: ±50 m/s
+- **t_end**: 0.1–20 s
+
 ### Canvas rendering
 
 All three canvases are redrawn from scratch on every `update()` call. Each draw function (`drawAnimation`, `drawPlot`, `drawPoles`) calls `animLayout()` / computes its own layout inline, accounting for `devicePixelRatio` on every measurement. No retained drawing objects.
@@ -41,11 +49,24 @@ All three canvases are redrawn from scratch on every `update()` call. Each draw 
 
 ### Drag interaction
 
-`mousedown` on `anim-canvas` starts a drag only if the click hits the mass bounding box (checked via `massHitTest`). Position samples are buffered in `velBuf` (last 6 `{x, t}` entries). On `mouseup`, v₀ is derived from the first/last buffer entries: `v0 = (b.x − a.x) / dt` in physical meters/second. The result is written back to the `r1-v0` or `r2-v0` input and `update()` is called. Touch events are forwarded as synthetic mouse events.
+`mousedown` on `anim-canvas` stops any running animation, snaps the mass to the clicked x position, and initiates a drag. Position samples are buffered in `velBuf` (last 6 `{x, t}` entries). On `mouseup`, v₀ is derived from the first/last buffer entries: `v0 = (b.x − a.x) / dt` in physical meters/second. The result is written back to the `r1-v0` or `r2-v0` input, `update()` is called, and the animation auto-starts. `displayX` tracks the live animated position for smooth hit-testing mid-animation. Touch events are forwarded as synthetic mouse events.
+
+## UI/UX behaviors
+
+- **Parameter changes**: Any input change stops the animation and resets the mass to the new initial conditions.
+- **Response 2 enable**: Checking "Enable Response 2" mirrors all R1 parameter values into R2 as a baseline.
+- **Animation auto-start**: Releasing a drag automatically starts the animation from the new initial condition.
+- **Live drag during animation**: Clicking anywhere on the animation canvas snaps the mass to that position and starts a drag, even if an animation is running.
+- **Canvas labels**: "Characteristic Roots" (not "Pole-Zero Diagram"), x-axis "Real", y-axis "Imaginary".
+
+## Spring drawing
+
+The spring uses a fixed 7-coil MATLAB-style zigzag with flat leads at each end. Nodes are offset by half-spacing at entry/exit (`i + 0.5` instead of `i / nZig`) to eliminate abrupt vertical segments and create smooth angled transitions from the horizontal leads.
 
 ## Key constraints
 
 - No build tooling, no npm, no modules (`import`/`export` not used).
 - All canvas measurements must be multiplied by `devicePixelRatio` — raw pixel math without DPR will look blurry on HiDPI screens.
-- Physical x range is ±10 m; velocity range is ±50 m/s. These limits are enforced on drag and in the input `min`/`max` attributes.
+- Physical x range is ±10 m; velocity range is ±50 m/s.
 - The `eqX` coordinate in `animLayout()` is the canvas x-pixel for physical x=0 (equilibrium). `physToCanvasX(xPhys, L)` converts from meters to canvas pixels.
+- Axis labels on time plot and characteristic roots plot are positioned 22 logical pixels below the plot baseline (after tick labels at +5*dpr); bottom padding is 72*dpr to ensure full visibility at all DPR values.
