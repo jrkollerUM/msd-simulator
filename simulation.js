@@ -272,8 +272,8 @@ function drawPlot(nowSec) {
   ctx.fillStyle    = COLORS.textDim;
   ctx.font         = `${11 * dpr}px -apple-system, Helvetica, sans-serif`;
   ctx.textAlign    = 'center';
-  ctx.textBaseline = 'bottom';
-  ctx.fillText('Time (s)', pad.l + pw / 2, H - 8 * dpr);
+  ctx.textBaseline = 'top';
+  ctx.fillText('Time (s)', pad.l + pw / 2, pad.t + ph + 22 * dpr);
   ctx.save();
   ctx.translate(14 * dpr, pad.t + ph / 2);
   ctx.rotate(-Math.PI / 2);
@@ -384,8 +384,8 @@ function drawPoles() {
   ctx.fillStyle    = COLORS.textDim;
   ctx.font         = `${11 * dpr}px -apple-system, Helvetica, sans-serif`;
   ctx.textAlign    = 'center';
-  ctx.textBaseline = 'bottom';
-  ctx.fillText('Real', pad.l + pw / 2, H - 8 * dpr);
+  ctx.textBaseline = 'top';
+  ctx.fillText('Real', pad.l + pw / 2, pad.t + ph + 22 * dpr);
   ctx.save();
   ctx.translate(14 * dpr, pad.t + ph / 2);
   ctx.rotate(-Math.PI / 2);
