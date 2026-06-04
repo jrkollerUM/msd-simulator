@@ -23,12 +23,12 @@ const setVal = (id, v) => { document.getElementById(id).value = v; };
 function getParams(n) {
   const p = n === 1 ? 'r1' : 'r2';
   return {
-    m:    Math.max(0.0001, getNum(`${p}-m`)),
-    k:    Math.max(0.0001, getNum(`${p}-k`)),
-    c:    Math.max(0,      getNum(`${p}-c`)),
-    x0:   getNum(`${p}-x0`),
-    v0:   getNum(`${p}-v0`),
-    tend: Math.max(0.1,   getNum(`${p}-tend`)),
+    m:    Math.min(100,   Math.max(0.01,  getNum(`${p}-m`))),
+    k:    Math.min(50000, Math.max(0.1,   getNum(`${p}-k`))),
+    c:    Math.min(10000, Math.max(0,     getNum(`${p}-c`))),
+    x0:   Math.min(10,    Math.max(-10,   getNum(`${p}-x0`))),
+    v0:   Math.min(50,    Math.max(-50,   getNum(`${p}-v0`))),
+    tend: Math.min(20,    Math.max(0.1,   getNum(`${p}-tend`))),
   };
 }
 
