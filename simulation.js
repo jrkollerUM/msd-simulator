@@ -119,6 +119,7 @@ function updateDerivedLabels() {
 
 // ── Full recompute + redraw ────────────────────────────────────────────────
 function update() {
+  if (animRaf) stopAnimation(true);
   resp1 = computeResponse(getParams(1));
   resp2 = r2Enabled ? computeResponse(getParams(2)) : null;
   updateDerivedLabels();
