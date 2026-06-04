@@ -714,11 +714,11 @@ document.getElementById('enable-r2').addEventListener('change', e => {
   const awRow   = document.getElementById('animate-which-row');
   r2Panel.querySelectorAll('input').forEach(i => { i.disabled = !r2Enabled; });
   awRow.style.display = r2Enabled ? 'flex' : 'none';
+  // Mirror r1 values into r2 whenever the checkbox changes state
+  ['m', 'k', 'c', 'x0', 'v0', 'tend'].forEach(f => {
+    setVal(`r2-${f}`, getNum(`r1-${f}`));
+  });
   if (!r2Enabled) {
-    // Mirror r1 values into r2
-    ['m', 'k', 'c', 'x0', 'v0', 'tend'].forEach(f => {
-      setVal(`r2-${f}`, getNum(`r1-${f}`));
-    });
     document.getElementById('r2-wn').textContent   = '—';
     document.getElementById('r2-zeta').textContent = '—';
     document.getElementById('r2-damp-type').textContent = '';
