@@ -6,7 +6,7 @@
 // ── Constants ──────────────────────────────────────────────────────────────
 const FPS = 60;
 const DT  = 1 / FPS;
-const COLORS = { r1: '#1f77b4', r2: '#ff7f0e', spring: '#2ca02c', damper: '#d62728', wall: '#888', eq: '#555', text: '#ccc', grid: '#222' };
+const COLORS = { r1: '#FFCB05', r2: '#00274C', spring: '#555555', damper: '#888888', wall: '#aaa', eq: '#bbb', text: '#1d1d1f', textDim: '#6e6e73', grid: '#e8e8ed', zeroline: '#c8c8cd', bg: '#ffffff' };
 
 // ── Canvas references ──────────────────────────────────────────────────────
 const animCanvas  = document.getElementById('anim-canvas');
@@ -154,8 +154,10 @@ function drawPlot(nowSec) {
   const dpr = devicePixelRatio;
 
   ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = COLORS.bg;
+  ctx.fillRect(0, 0, W, H);
 
-  const pad = { t: 16 * dpr, r: 16 * dpr, b: 36 * dpr, l: 52 * dpr };
+  const pad = { t: 18 * dpr, r: 18 * dpr, b: 52 * dpr, l: 58 * dpr };
   const pw  = W - pad.l - pad.r;
   const ph  = H - pad.t - pad.b;
 
@@ -187,8 +189,8 @@ function drawPlot(nowSec) {
   }
 
   // Zero line
-  ctx.strokeStyle = '#444';
-  ctx.lineWidth   = 1;
+  ctx.strokeStyle = COLORS.zeroline;
+  ctx.lineWidth   = 1.5;
   const cy0 = toCanvasY(0);
   ctx.beginPath(); ctx.moveTo(pad.l, cy0); ctx.lineTo(pad.l + pw, cy0); ctx.stroke();
 
@@ -236,7 +238,7 @@ function drawPlot(nowSec) {
   // Now cursor
   if (nowSec !== undefined && nowSec >= 0) {
     const cx = toCanvasX(nowSec);
-    ctx.strokeStyle = '#fff8';
+    ctx.strokeStyle = 'rgba(0,39,76,0.25)';
     ctx.lineWidth   = 1 * dpr;
     ctx.setLineDash([3 * dpr, 3 * dpr]);
     ctx.beginPath(); ctx.moveTo(cx, pad.t); ctx.lineTo(cx, pad.t + ph); ctx.stroke();
@@ -244,35 +246,35 @@ function drawPlot(nowSec) {
   }
 
   // Axes
-  ctx.strokeStyle = '#666';
+  ctx.strokeStyle = '#c0c0c8';
   ctx.lineWidth   = 1;
   ctx.beginPath(); ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, pad.t + ph); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(pad.l, pad.t + ph); ctx.lineTo(pad.l + pw, pad.t + ph); ctx.stroke();
 
   // Tick labels
-  ctx.fillStyle  = COLORS.text;
-  ctx.font       = `${11 * dpr}px monospace`;
+  ctx.fillStyle  = COLORS.textDim;
+  ctx.font       = `${10.5 * dpr}px -apple-system, Helvetica, sans-serif`;
   ctx.textAlign  = 'center';
   ctx.textBaseline = 'top';
   for (let i = 0; i <= nGridX; i++) {
     const t = i / nGridX * tMax;
-    ctx.fillText(t.toFixed(1), pad.l + i / nGridX * pw, pad.t + ph + 4 * dpr);
+    ctx.fillText(t.toFixed(1), pad.l + i / nGridX * pw, pad.t + ph + 5 * dpr);
   }
   ctx.textAlign    = 'right';
   ctx.textBaseline = 'middle';
   const yTicks = [-yMax, -yMax / 2, 0, yMax / 2, yMax];
   yTicks.forEach(v => {
-    ctx.fillText(v.toFixed(2), pad.l - 4 * dpr, toCanvasY(v));
+    ctx.fillText(v.toFixed(2), pad.l - 5 * dpr, toCanvasY(v));
   });
 
   // Axis labels
-  ctx.fillStyle    = '#aaa';
-  ctx.font         = `${10 * dpr}px sans-serif`;
+  ctx.fillStyle    = COLORS.textDim;
+  ctx.font         = `${11 * dpr}px -apple-system, Helvetica, sans-serif`;
   ctx.textAlign    = 'center';
   ctx.textBaseline = 'bottom';
-  ctx.fillText('Time (s)', pad.l + pw / 2, H - 2 * dpr);
+  ctx.fillText('Time (s)', pad.l + pw / 2, H - 6 * dpr);
   ctx.save();
-  ctx.translate(12 * dpr, pad.t + ph / 2);
+  ctx.translate(14 * dpr, pad.t + ph / 2);
   ctx.rotate(-Math.PI / 2);
   ctx.textBaseline = 'top';
   ctx.fillText('Position (m)', 0, 0);
@@ -282,14 +284,14 @@ function drawPlot(nowSec) {
   const items = [{ label: `R1  ωₙ=${resp1.wn.toFixed(2)} ζ=${resp1.zeta.toFixed(3)}`, color: COLORS.r1 }];
   if (resp2) items.push({ label: `R2  ωₙ=${resp2.wn.toFixed(2)} ζ=${resp2.zeta.toFixed(3)}`, color: COLORS.r2 });
   let lx = pad.l + 8 * dpr;
-  ctx.font = `${10 * dpr}px sans-serif`;
+  ctx.font = `${10 * dpr}px -apple-system, Helvetica, sans-serif`;
   items.forEach(item => {
     ctx.fillStyle = item.color;
-    ctx.fillRect(lx, pad.t + 4 * dpr, 18 * dpr, 2.5 * dpr);
+    ctx.fillRect(lx, pad.t + 4 * dpr, 18 * dpr, 3 * dpr);
     ctx.fillStyle = COLORS.text;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
-    ctx.fillText(item.label, lx + 22 * dpr, pad.t + 5 * dpr);
+    ctx.fillText(item.label, lx + 22 * dpr, pad.t + 5.5 * dpr);
     lx += ctx.measureText(item.label).width + 36 * dpr;
   });
 }
@@ -302,9 +304,11 @@ function drawPoles() {
   const dpr  = devicePixelRatio;
 
   ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = COLORS.bg;
+  ctx.fillRect(0, 0, W, H);
   if (!resp1) return;
 
-  const pad = { t: 16 * dpr, r: 16 * dpr, b: 36 * dpr, l: 52 * dpr };
+  const pad = { t: 18 * dpr, r: 18 * dpr, b: 52 * dpr, l: 58 * dpr };
   const pw  = W - pad.l - pad.r;
   const ph  = H - pad.t - pad.b;
 
@@ -330,14 +334,14 @@ function drawPoles() {
   }
 
   // Axes
-  ctx.strokeStyle = '#555';
+  ctx.strokeStyle = '#c0c0c8';
   ctx.lineWidth   = 1;
   const cx0 = toX(0), cy0 = toY(0);
   ctx.beginPath(); ctx.moveTo(cx0, pad.t); ctx.lineTo(cx0, pad.t + ph); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(pad.l, cy0); ctx.lineTo(pad.l + pw, cy0); ctx.stroke();
 
   // Stability region fill
-  ctx.fillStyle = 'rgba(0,40,0,0.18)';
+  ctx.fillStyle = 'rgba(0,39,76,0.04)';
   ctx.fillRect(pad.l, pad.t, cx0 - pad.l, ph);
 
   // Draw poles
@@ -358,31 +362,31 @@ function drawPoles() {
   if (resp2) drawPolesFor(computePoles(getParams(2)), COLORS.r2);
 
   // Tick labels
-  ctx.fillStyle    = COLORS.text;
-  ctx.font         = `${10 * dpr}px monospace`;
+  ctx.fillStyle    = COLORS.textDim;
+  ctx.font         = `${10.5 * dpr}px -apple-system, Helvetica, sans-serif`;
   ctx.textAlign    = 'center';
   ctx.textBaseline = 'top';
   [-1, -0.5, 0, 0.5, 1].forEach(f => {
     const val = f * rng;
     const cx  = toX(val);
-    ctx.fillText(val.toFixed(1), cx, pad.t + ph + 3 * dpr);
+    ctx.fillText(val.toFixed(1), cx, pad.t + ph + 5 * dpr);
   });
   ctx.textAlign    = 'right';
   ctx.textBaseline = 'middle';
   [-1, -0.5, 0.5, 1].forEach(f => {
     const val = f * rng;
     const cy  = toY(val);
-    ctx.fillText(val.toFixed(1), pad.l - 3 * dpr, cy);
+    ctx.fillText(val.toFixed(1), pad.l - 5 * dpr, cy);
   });
 
   // Axis labels
-  ctx.fillStyle    = '#aaa';
-  ctx.font         = `${10 * dpr}px sans-serif`;
+  ctx.fillStyle    = COLORS.textDim;
+  ctx.font         = `${11 * dpr}px -apple-system, Helvetica, sans-serif`;
   ctx.textAlign    = 'center';
   ctx.textBaseline = 'bottom';
-  ctx.fillText('σ  (real)', pad.l + pw / 2, H - 2 * dpr);
+  ctx.fillText('σ  (real)', pad.l + pw / 2, H - 6 * dpr);
   ctx.save();
-  ctx.translate(12 * dpr, pad.t + ph / 2);
+  ctx.translate(14 * dpr, pad.t + ph / 2);
   ctx.rotate(-Math.PI / 2);
   ctx.textBaseline = 'top';
   ctx.fillText('jω  (imag)', 0, 0);
@@ -427,27 +431,40 @@ function physToCanvasX(xPhys, layout) {
   return layout.eqX + xPhys * layout.scale;
 }
 
+// MATLAB-style spring: flat lead-in, fixed N zigzag coils, flat lead-out
+// nCoils must be even; the zig/zag alternates ±amp from centerline y
 function springPath(x1, y, x2, nCoils, amp) {
   const pts = [];
-  const seg = x2 - x1;
+  const leadFrac = 0.08;  // fraction of length for flat lead at each end
+  const len = x2 - x1;
+  const leadLen = len * leadFrac;
+  const zigStart = x1 + leadLen;
+  const zigEnd   = x2 - leadLen;
+  const zigLen   = zigEnd - zigStart;
+  const nZig     = nCoils * 2;  // number of zig/zag segments
+
   pts.push([x1, y]);
-  for (let i = 1; i <= nCoils * 2; i++) {
-    const xi = x1 + (i / (nCoils * 2)) * seg;
-    const yi = y + (i % 2 === 1 ? amp : -amp);
+  pts.push([zigStart, y]);
+  for (let i = 0; i <= nZig; i++) {
+    const xi = zigStart + (i / nZig) * zigLen;
+    const yi = y + (i % 2 === 0 ? amp : -amp);
     pts.push([xi, yi]);
   }
+  pts.push([zigEnd, y]);
   pts.push([x2, y]);
   return pts;
 }
 
 function drawAnimation(xPhys, nowSec) {
+  displayX = xPhys;
   const ctx = animCtx;
   const L   = animLayout();
   ctx.clearRect(0, 0, L.W, L.H);
+  ctx.fillStyle = COLORS.bg;
+  ctx.fillRect(0, 0, L.W, L.H);
 
   const massX = physToCanvasX(xPhys, L);   // left edge of mass
   const massCX = massX + L.massW / 2;
-  const wallRight = L.wallX + L.wallW;
 
   // Equilibrium dashed line
   ctx.strokeStyle = COLORS.eq;
@@ -459,16 +476,16 @@ function drawAnimation(xPhys, nowSec) {
   ctx.stroke();
   ctx.setLineDash([]);
 
-  // Wall hatching
-  ctx.fillStyle = '#555';
+  // Wall — light gray fill + darker edge + diagonal hatching
+  ctx.fillStyle = '#e0e0e5';
   ctx.fillRect(L.wallX - L.wallW, L.wallTop, L.wallW, L.H - L.wallTop - L.pad.b);
-  ctx.strokeStyle = '#888';
-  ctx.lineWidth   = 1 * L.dpr;
+  ctx.strokeStyle = '#b0b0b8';
+  ctx.lineWidth   = 1.5 * L.dpr;
   ctx.beginPath();
   ctx.moveTo(L.wallX, L.wallTop); ctx.lineTo(L.wallX, L.H - L.pad.b);
   ctx.stroke();
   // Hatching lines
-  ctx.strokeStyle = '#444';
+  ctx.strokeStyle = '#c8c8d0';
   ctx.lineWidth   = 0.8 * L.dpr;
   const hatchStep = 8 * L.dpr;
   for (let y = L.wallTop; y < L.H - L.pad.b; y += hatchStep) {
@@ -478,13 +495,12 @@ function drawAnimation(xPhys, nowSec) {
     ctx.stroke();
   }
 
-  // Spring
+  // Spring — fixed 7 coils, amplitude scales slightly with compression
   const springX1  = L.wallX;
   const springX2  = massX;
   const springLen = springX2 - springX1;
-  const nCoils    = Math.max(4, Math.round(springLen / (10 * L.dpr)));
-  const amp       = Math.min(L.massH * 0.18, Math.max(4 * L.dpr, springLen * 0.07));
-  const springPts = springPath(springX1, L.springY, springX2, nCoils, amp);
+  const amp       = Math.min(L.massH * 0.20, Math.max(5 * L.dpr, springLen * 0.08));
+  const springPts = springPath(springX1, L.springY, springX2, 7, amp);
 
   ctx.strokeStyle = COLORS.spring;
   ctx.lineWidth   = 2 * L.dpr;
@@ -506,49 +522,50 @@ function drawAnimation(xPhys, nowSec) {
   ctx.strokeRect(dMid - pistonH * 1.2, dY - pistonH, pistonH * 2.4, pistonH * 2);
   // Rod from piston to mass
   ctx.beginPath(); ctx.moveTo(dMid + pistonH * 1.2, dY); ctx.lineTo(dX2, dY); ctx.stroke();
-  // Cylinder lines inside piston
-  ctx.strokeStyle = '#a00';
+  // Cylinder line inside piston
+  ctx.strokeStyle = '#b0b0b8';
   ctx.lineWidth   = 1 * L.dpr;
   ctx.beginPath(); ctx.moveTo(dMid - 1 * L.dpr, dY - pistonH); ctx.lineTo(dMid - 1 * L.dpr, dY + pistonH); ctx.stroke();
 
   // Mass block
   const activeColor = animWhich === 2 ? COLORS.r2 : COLORS.r1;
-  ctx.fillStyle   = activeColor + '99';
+  const massFill = animWhich === 2 ? 'rgba(0,39,76,0.12)' : 'rgba(255,203,5,0.22)';
+  ctx.fillStyle   = massFill;
   ctx.strokeStyle = activeColor;
   ctx.lineWidth   = 2 * L.dpr;
   ctx.fillRect(massX, L.massY, L.massW, L.massH);
   ctx.strokeRect(massX, L.massY, L.massW, L.massH);
   ctx.fillStyle    = COLORS.text;
-  ctx.font         = `bold ${Math.max(10, 12 * L.dpr)}px sans-serif`;
+  ctx.font         = `bold ${Math.max(10, 12 * L.dpr)}px -apple-system, Helvetica, sans-serif`;
   ctx.textAlign    = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText('m', massX + L.massW / 2, L.midY);
 
   // Legend bar
   const legY  = L.H - L.pad.b / 2;
-  const legFs = 9 * L.dpr;
-  ctx.font         = `${legFs}px sans-serif`;
+  const legFs = 9.5 * L.dpr;
+  ctx.font         = `${legFs}px -apple-system, Helvetica, sans-serif`;
   ctx.textBaseline = 'middle';
   ctx.textAlign    = 'left';
   const items = [
     { color: COLORS.spring, label: 'Spring' },
     { color: COLORS.damper, label: 'Damper' },
     { color: activeColor,   label: 'Mass' },
-    { color: COLORS.eq,     label: 'Equilibrium' },
+    { color: '#aaaaaa',     label: 'Equilibrium' },
   ];
   let lx = L.pad.l;
   items.forEach(item => {
     ctx.fillStyle = item.color;
     ctx.fillRect(lx, legY - 2 * L.dpr, 14 * L.dpr, 4 * L.dpr);
-    ctx.fillStyle = COLORS.text;
+    ctx.fillStyle = COLORS.textDim;
     ctx.fillText(item.label, lx + 17 * L.dpr, legY);
     lx += ctx.measureText(item.label).width + 26 * L.dpr;
   });
 
   // x label
   const xStr = `x = ${xPhys.toFixed(3)} m`;
-  ctx.fillStyle    = '#aaa';
-  ctx.font         = `${9 * L.dpr}px monospace`;
+  ctx.fillStyle    = COLORS.textDim;
+  ctx.font         = `${9.5 * L.dpr}px -apple-system, Helvetica, sans-serif`;
   ctx.textAlign    = 'right';
   ctx.textBaseline = 'top';
   ctx.fillText(xStr, L.W - L.pad.r, L.pad.t);
@@ -567,12 +584,14 @@ function startAnimation() {
   animRaf = requestAnimationFrame(animFrame);
 }
 
-function stopAnimation() {
+function stopAnimation(skipRedraw = false) {
   if (animRaf) { cancelAnimationFrame(animRaf); animRaf = null; }
   animBtn.textContent = '▶ Animate';
   animBtn.classList.remove('running');
-  if (animData) drawAnimation(animData.x[0]);
-  drawPlot();
+  if (!skipRedraw) {
+    if (animData) drawAnimation(animData.x[0]);
+    drawPlot();
+  }
 }
 
 function animFrame(ts) {
@@ -594,6 +613,7 @@ animBtn.addEventListener('click', () => {
 let dragActive  = false;
 let velBuf      = [];   // [{x, t}]
 const VEL_BUF_N = 6;
+let displayX    = 0;    // physical x currently rendered on the animation canvas
 
 function canvasToPhysX(canvasX) {
   const L = animLayout();
@@ -605,7 +625,7 @@ function massHitTest(canvasX, canvasY) {
   const L   = animLayout();
   const dpr = devicePixelRatio;
   const cx  = canvasX * dpr, cy = canvasY * dpr;
-  const xPhys = dragActive ? currentDragX : (animWhich === 2 && resp2 ? resp2.x[0] : resp1 ? resp1.x[0] : 0);
+  const xPhys = dragActive ? currentDragX : displayX;
   const massLeft = physToCanvasX(xPhys, L);
   return cx >= massLeft && cx <= massLeft + L.massW &&
          cy >= L.massY   && cy <= L.massY + L.massH;
@@ -618,10 +638,11 @@ animCanvas.addEventListener('mousedown', e => {
   const cx   = e.clientX - rect.left;
   const cy   = e.clientY - rect.top;
   if (!massHitTest(cx, cy)) return;
-  if (animRaf) stopAnimation();
+  if (animRaf) stopAnimation(true);
   dragActive = true;
-  currentDragX = canvasToPhysX(cx);
+  currentDragX = Math.max(-10, Math.min(10, canvasToPhysX(cx)));
   velBuf = [{ x: currentDragX, t: performance.now() }];
+  drawAnimation(currentDragX);
   animCanvas.style.cursor = 'grabbing';
 });
 
@@ -660,6 +681,7 @@ window.addEventListener('mouseup', () => {
   setVal(`${prefix}-x0`, x0.toFixed(3));
   setVal(`${prefix}-v0`, v0.toFixed(3));
   update();
+  startAnimation();
 });
 
 // Touch support
