@@ -636,8 +636,6 @@ let currentDragX = 0;
 animCanvas.addEventListener('mousedown', e => {
   const rect = animCanvas.getBoundingClientRect();
   const cx   = e.clientX - rect.left;
-  const cy   = e.clientY - rect.top;
-  if (!massHitTest(cx, cy)) return;
   if (animRaf) stopAnimation(true);
   dragActive = true;
   currentDragX = Math.max(-10, Math.min(10, canvasToPhysX(cx)));
