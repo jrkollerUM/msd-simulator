@@ -92,6 +92,8 @@
 
       <button id="animate-btn">&#9654; Animate</button>
 
+      <button id="export-data-btn">&#8681; Download Data</button>
+
       <div id="drag-hint">Drag the mass to set initial position &amp; velocity</div>
     </aside>
 
@@ -99,15 +101,18 @@
     <main id="vis-panel">
       <div class="canvas-wrapper">
         <div class="canvas-title">Animation</div>
-        <canvas id="anim-canvas"></canvas>
+        <canvas id="anim-canvas" aria-label="Animation of mass position over time"></canvas>
+        <div id="anim-description" role="region" aria-live="polite" class="sr-only"></div>
       </div>
       <div class="canvas-wrapper">
         <div class="canvas-title">Position vs. Time</div>
-        <canvas id="plot-canvas"></canvas>
+        <canvas id="plot-canvas" aria-label="Position versus time plot"></canvas>
+        <div id="plot-description" role="region" aria-live="polite" class="sr-only"></div>
       </div>
       <div class="canvas-wrapper">
         <div class="canvas-title">Characteristic Roots</div>
-        <canvas id="poles-canvas"></canvas>
+        <canvas id="poles-canvas" aria-label="Characteristic roots or pole locations in the complex plane"></canvas>
+        <div id="poles-description" role="region" aria-live="polite" class="sr-only"></div>
       </div>
     </main>
   </div>

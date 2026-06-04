@@ -117,12 +117,70 @@ function updateDerivedLabels() {
   }
 }
 
+// ── Accessibility: update hidden descriptions ──────────────────────────────
+function updateA11yDescriptions() {
+  function fmt(n, digits) { return isFinite(n) ? n.toFixed(digits) : '—'; }
+
+  const p1 = getParams(1);
+  const { wn: wn1, zeta: zeta1 } = systemProps(p1);
+  const type1 = zeta1 < 1 - 1e-4 ? 'underdamped' : zeta1 > 1 + 1e-4 ? 'overdamped' : 'critically damped';
+  const animDesc = `Animation showing mass motion. Response 1: Natural frequency ${fmt(wn1, 3)} rad/s, damping ratio ${fmt(zeta1, 4)} (${type1}). ` +
+    `Initial position: ${fmt(p1.x0, 2)} m, initial velocity: ${fmt(p1.v0, 2)} m/s. `;
+  document.getElementById('anim-description').textContent = animDesc;
+
+  const plotDesc = `Position versus time plot. Response 1 shown in maize. Time ranges from 0 to ${fmt(p1.tend, 1)} s. ` +
+    (resp2 ? `Response 2 shown in blue. ` : '') +
+    `Y-axis shows displacement in meters.`;
+  document.getElementById('plot-description').textContent = plotDesc;
+
+  const polesDesc = `Characteristic roots or poles in the complex plane. Real axis shows real part, imaginary axis shows imaginary part. ` +
+    `Response 1 poles: ${type1}.` + (resp2 ? ` Response 2 poles also shown.` : '');
+  document.getElementById('poles-description').textContent = polesDesc;
+}
+
+// ── Data export ────────────────────────────────────────────────────────────
+function exportDataAsCSV() {
+  if (!resp1) return;
+
+  const rows = [];
+  rows.push('time (s),Response 1 position (m)' + (resp2 ? ',Response 2 position (m)' : ''));
+
+  const maxLen = Math.max(resp1.t.length, resp2 ? resp2.t.length : 0);
+  for (let i = 0; i < maxLen; i++) {
+    let row = '';
+    if (i < resp1.t.length) {
+      row += resp1.t[i].toFixed(6) + ',' + resp1.x[i].toFixed(6);
+    } else {
+      row += ',';
+    }
+    if (resp2 && i < resp2.t.length) {
+      row += ',' + resp2.x[i].toFixed(6);
+    } else if (resp2) {
+      row += ',';
+    }
+    rows.push(row);
+  }
+
+  const csv = rows.join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  link.setAttribute('href', url);
+  link.setAttribute('download', 'msd-simulation-data.csv');
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
 // ── Full recompute + redraw ────────────────────────────────────────────────
 function update() {
   if (animRaf) stopAnimation(true);
   resp1 = computeResponse(getParams(1));
   resp2 = r2Enabled ? computeResponse(getParams(2)) : null;
   updateDerivedLabels();
+  updateA11yDescriptions();
   resizeAll();
   drawPlot();
   drawPoles();
@@ -611,6 +669,10 @@ function animFrame(ts) {
 
 animBtn.addEventListener('click', () => {
   animRaf ? stopAnimation() : startAnimation();
+});
+
+document.getElementById('export-data-btn').addEventListener('click', () => {
+  exportDataAsCSV();
 });
 
 // ── Drag to set initial conditions ────────────────────────────────────────

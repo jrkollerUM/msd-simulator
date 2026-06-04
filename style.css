@@ -143,7 +143,7 @@ html, body { height: 100%; font-family: -apple-system, 'SF Pro Text', 'Helvetica
   cursor: pointer;
 }
 
-#animate-btn {
+#animate-btn, #export-data-btn {
   width: 100%;
   padding: 10px;
   background: #00274C;
@@ -156,7 +156,7 @@ html, body { height: 100%; font-family: -apple-system, 'SF Pro Text', 'Helvetica
   letter-spacing: .02em;
   transition: opacity .15s;
 }
-#animate-btn:hover { opacity: .88; }
+#animate-btn:hover, #export-data-btn:hover { opacity: .88; }
 #animate-btn.running { background: #8a0000; color: #fff; }
 
 #drag-hint {
@@ -210,3 +210,16 @@ canvas {
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ── Accessibility ── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

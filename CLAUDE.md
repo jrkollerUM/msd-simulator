@@ -63,6 +63,21 @@ All three canvases are redrawn from scratch on every `update()` call. Each draw 
 
 The spring uses a fixed 7-coil MATLAB-style zigzag with flat leads at each end. Nodes are offset by half-spacing at entry/exit (`i + 0.5` instead of `i / nZig`) to eliminate abrupt vertical segments and create smooth angled transitions from the horizontal leads.
 
+## Accessibility (WCAG 2.1 AA)
+
+The app is being brought into WCAG 2.1 AA compliance. See `WCAG_2.1_AA_Compliance_Report.txt` for a full audit.
+
+**Canvas accessibility**: Each of the three canvas elements (`anim-canvas`, `plot-canvas`, `poles-canvas`) has:
+- `aria-label` describing the canvas purpose (e.g., "Animation of mass position over time")
+- A hidden `<div role="region" aria-live="polite">` below the canvas with live-updated text descriptions of current state (damping type, key values, axis ranges)
+- A "Download Data" button that exports current simulation results as CSV for screen reader / data inspection use
+
+**Keyboard accessibility**: 
+- Velocity input is available directly via the `r1-v0` / `r2-v0` input fields (no keyboard alternative to drag yet, but planned for phase 2)
+- All controls are keyboard-navigable; focus indicators present
+
+**Related files**: `WCAG_2.1_AA_Compliance_Report.txt` documents issues and remediation priority.
+
 ## Key constraints
 
 - No build tooling, no npm, no modules (`import`/`export` not used).
