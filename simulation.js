@@ -385,12 +385,12 @@ function drawPoles() {
   ctx.font         = `${11 * dpr}px -apple-system, Helvetica, sans-serif`;
   ctx.textAlign    = 'center';
   ctx.textBaseline = 'bottom';
-  ctx.fillText('σ  (real)', pad.l + pw / 2, H - 6 * dpr);
+  ctx.fillText('Real', pad.l + pw / 2, H - 6 * dpr);
   ctx.save();
   ctx.translate(14 * dpr, pad.t + ph / 2);
   ctx.rotate(-Math.PI / 2);
   ctx.textBaseline = 'top';
-  ctx.fillText('jω  (imag)', 0, 0);
+  ctx.fillText('Imaginary', 0, 0);
   ctx.restore();
 }
 
