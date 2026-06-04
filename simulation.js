@@ -158,7 +158,7 @@ function drawPlot(nowSec) {
   ctx.fillStyle = COLORS.bg;
   ctx.fillRect(0, 0, W, H);
 
-  const pad = { t: 18 * dpr, r: 18 * dpr, b: 52 * dpr, l: 58 * dpr };
+  const pad = { t: 18 * dpr, r: 18 * dpr, b: 58 * dpr, l: 58 * dpr };
   const pw  = W - pad.l - pad.r;
   const ph  = H - pad.t - pad.b;
 
@@ -272,8 +272,8 @@ function drawPlot(nowSec) {
   ctx.fillStyle    = COLORS.textDim;
   ctx.font         = `${11 * dpr}px -apple-system, Helvetica, sans-serif`;
   ctx.textAlign    = 'center';
-  ctx.textBaseline = 'bottom';
-  ctx.fillText('Time (s)', pad.l + pw / 2, H - 6 * dpr);
+  ctx.textBaseline = 'top';
+  ctx.fillText('Time (s)', pad.l + pw / 2, pad.t + ph + 28 * dpr);
   ctx.save();
   ctx.translate(14 * dpr, pad.t + ph / 2);
   ctx.rotate(-Math.PI / 2);
@@ -309,7 +309,7 @@ function drawPoles() {
   ctx.fillRect(0, 0, W, H);
   if (!resp1) return;
 
-  const pad = { t: 18 * dpr, r: 18 * dpr, b: 52 * dpr, l: 58 * dpr };
+  const pad = { t: 18 * dpr, r: 18 * dpr, b: 58 * dpr, l: 58 * dpr };
   const pw  = W - pad.l - pad.r;
   const ph  = H - pad.t - pad.b;
 
@@ -384,8 +384,8 @@ function drawPoles() {
   ctx.fillStyle    = COLORS.textDim;
   ctx.font         = `${11 * dpr}px -apple-system, Helvetica, sans-serif`;
   ctx.textAlign    = 'center';
-  ctx.textBaseline = 'bottom';
-  ctx.fillText('Real', pad.l + pw / 2, H - 6 * dpr);
+  ctx.textBaseline = 'top';
+  ctx.fillText('Real', pad.l + pw / 2, pad.t + ph + 28 * dpr);
   ctx.save();
   ctx.translate(14 * dpr, pad.t + ph / 2);
   ctx.rotate(-Math.PI / 2);
