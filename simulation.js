@@ -444,10 +444,12 @@ function springPath(x1, y, x2, nCoils, amp) {
   const zigLen   = zigEnd - zigStart;
   const nZig     = nCoils * 2;  // number of zig/zag segments
 
+  const spacing = zigLen / nZig;
+
   pts.push([x1, y]);
   pts.push([zigStart, y]);
-  for (let i = 0; i <= nZig; i++) {
-    const xi = zigStart + (i / nZig) * zigLen;
+  for (let i = 0; i < nZig; i++) {
+    const xi = zigStart + (i + 0.5) * spacing;  // half-spacing offset at both ends
     const yi = y + (i % 2 === 0 ? amp : -amp);
     pts.push([xi, yi]);
   }
