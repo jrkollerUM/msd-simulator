@@ -72,9 +72,13 @@ The app is being brought into WCAG 2.1 AA compliance. See `WCAG_2.1_AA_Complianc
 - A hidden `<div role="region" aria-live="polite">` below the canvas with live-updated text descriptions of current state (damping type, key values, axis ranges)
 - A "Download Data" button that exports current simulation results as CSV for screen reader / data inspection use
 
-**Keyboard accessibility**: 
-- Velocity input is available directly via the `r1-v0` / `r2-v0` input fields (no keyboard alternative to drag yet, but planned for phase 2)
-- All controls are keyboard-navigable; focus indicators present
+**Keyboard accessibility**:
+- `anim-canvas` has `tabindex="0"` — reachable via Tab in natural order
+- Arrow keys (↑/↓) adjust velocity by 0.5 m/s when canvas has focus; Shift+arrow = 0.1 m/s fine step
+- Focus ring (3px `#00274C` outline) shown only during keyboard navigation via `:focus-visible`; mouse clicks do not trigger the outline (`:focus { outline: none }` suppresses it)
+- Drag interaction fully preserved; `animCanvas.focus()` was intentionally removed from the mousedown handler to prevent focus ring appearing on drag
+
+**Canvas legends**: Both the animation canvas component legend (Spring/Damper/Mass/Equilibrium) and the position plot response legend (R1/R2 ωₙ/ζ labels) are currently commented out in `simulation.js` due to insufficient color contrast between elements. Search for `// Legend` to locate them for future re-enabling with improved contrast.
 
 **Related files**: `WCAG_2.1_AA_Compliance_Report.txt` documents issues and remediation priority.
 

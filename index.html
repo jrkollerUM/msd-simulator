@@ -94,14 +94,14 @@
 
       <button id="export-data-btn">&#8681; Download Data</button>
 
-      <div id="drag-hint">Drag the mass to set initial position &amp; velocity</div>
+      <div id="drag-hint">Drag the mass, or focus canvas and press ↑/↓ to adjust velocity</div>
     </aside>
 
     <!-- ── Right panel ── -->
     <main id="vis-panel">
       <div class="canvas-wrapper">
         <div class="canvas-title">Animation</div>
-        <canvas id="anim-canvas" aria-label="Animation of mass position over time"></canvas>
+        <canvas id="anim-canvas" tabindex="0" aria-label="Animation of mass position over time" aria-describedby="anim-description"></canvas>
         <div id="anim-description" role="region" aria-live="polite" class="sr-only"></div>
       </div>
       <div class="canvas-wrapper">

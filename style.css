@@ -206,6 +206,14 @@ canvas {
   height: 100%;
 }
 
+#anim-canvas:focus {
+  outline: none;
+}
+#anim-canvas:focus-visible {
+  outline: 3px solid #00274C;
+  outline-offset: 2px;
+}
+
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }

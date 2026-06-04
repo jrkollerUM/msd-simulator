@@ -6,21 +6,33 @@ Generated: 2026-06-04
 CRITICAL ISSUES
 ================================================================================
 
-1. CANVAS ACCESSIBILITY (Criterion 1.1.1 - Non-text Content)
-   - All three canvas elements render critical information (animation, position
-     vs. time plot, characteristic roots) with no text alternatives
-   - Requires: ARIA labels, hidden canvas descriptions, or a data table view
-     for screen reader users
-   - Also needs a text-based output (e.g., export table of values, or
-     alternative view mode)
+1. CANVAS ACCESSIBILITY (Criterion 1.1.1 - Non-text Content) ✅ ADDRESSED
+   - All three canvas elements now have aria-label attributes
+   - Hidden aria-live regions provide dynamic text descriptions that update
+     with parameter changes
+   - CSV export feature allows screen reader users to download precise numerical
+     data for inspection and analysis
+   - Implementation:
+     * anim-canvas: "Animation of mass position over time"
+     * plot-canvas: "Position versus time plot"
+     * poles-canvas: "Characteristic roots or pole locations in the complex plane"
+     * Hidden descriptions include: natural frequency, damping ratio, time ranges,
+       axis information, and pole configurations
+     * "Download Data" button exports simulation results as CSV with 6-decimal precision
 
-2. KEYBOARD NAVIGATION (Criterion 2.1.1 - Keyboard)
-   - Dragging on the animation canvas to set velocity requires mouse interaction
-     with no keyboard equivalent
-   - Parameters can be edited via keyboard, but the drag-based velocity setting
-     is mouse-only
-   - Requires: Keyboard alternative for setting velocity (e.g., explicit v₀
-     input field access without drag)
+2. KEYBOARD NAVIGATION (Criterion 2.1.1 - Keyboard) ✅ ADDRESSED
+   - Animation canvas is now focusable via Tab key (tabindex="0")
+   - Arrow keys (↑/↓) adjust velocity by 0.5 m/s per press when canvas is focused
+   - Shift+Arrow adjusts velocity by 0.1 m/s for fine-grained control
+   - Focus ring (3px blue outline) appears only during keyboard navigation,
+     not on mouse click, using :focus/:focus-visible CSS rules
+   - Drag hint text updated to inform users of the keyboard shortcut
+   - Drag interaction fully preserved for mouse users
+   - Implementation:
+     * anim-canvas: tabindex="0" and aria-describedby="anim-description"
+     * keydown listener on animCanvas intercepts ArrowUp/ArrowDown only
+     * Velocity clamped to ±50 m/s, consistent with input field constraints
+     * Prefix (r1/r2) matches active response selection (animWhich)
 
 3. COLOR CONTRAST ISSUES (Criterion 1.4.3 - Minimum Contrast)
    - Derived labels (ωₙ, ζ) use color: #a07800 (brown) on #F0F0F2 (light gray
@@ -31,10 +43,11 @@ CRITICAL ISSUES
    - Tick labels on canvas plots are rendered programmatically; need to verify
      pixel-level contrast (likely OK, but should test)
 
-4. FOCUS INDICATORS (Criterion 2.4.7 - Focus Visible)
+4. FOCUS INDICATORS (Criterion 2.4.7 - Focus Visible) ✅ ADDRESSED
    - Buttons and inputs have focus styling, which is good
-   - Canvas elements have no focusable mechanism, so no focus indicator needed
-     there (but they're also not keyboard accessible)
+   - Animation canvas now has a visible focus ring (3px #00274C outline) shown
+     only during keyboard navigation via :focus-visible, suppressed on mouse
+     click via :focus { outline: none } to avoid visual clutter
 
 ================================================================================
 MODERATE ISSUES
@@ -80,8 +93,8 @@ IMPLEMENTATION PRIORITY FOR PUBLIC DEPLOYMENT
 ================================================================================
 
 HIGH PRIORITY (BLOCKING WCAG AA):
-1. Add ARIA labels + hidden descriptions for all three canvas charts
-2. Provide keyboard alternative for drag-based velocity input
+1. ✅ Add ARIA labels + hidden descriptions for all three canvas charts [COMPLETE]
+2. ✅ Provide keyboard alternative for drag-based velocity input [COMPLETE]
 3. Verify canvas text contrast at actual rendering size
 
 MEDIUM PRIORITY (IMPROVES USABILITY):
@@ -99,14 +112,22 @@ LOW PRIORITY (UX POLISH):
 SUMMARY
 ================================================================================
 
-The biggest lift is making the canvas visualizations accessible — you'll need
-either a text alternative view, a data export feature, or ARIA descriptions
-that convey the plot information to screen reader users.
+PROGRESS UPDATE (2026-06-04):
+- ✅ Canvas accessibility [COMPLETE]: All three canvases now have ARIA labels
+  and dynamic hidden descriptions. CSV export feature provides numerical data
+  access for screen reader users.
+- ✅ Keyboard navigation [COMPLETE]: Animation canvas is Tab-focusable; arrow
+  keys adjust velocity (0.5 m/s coarse, 0.1 m/s fine with Shift). Focus ring
+  shown only for keyboard users. Drag interaction preserved for mouse users.
+- ✅ Focus indicators [COMPLETE]: Animation canvas has a keyboard-only focus
+  ring; mouse clicks do not trigger the outline.
+- Note: Canvas legends (animation canvas component labels and position plot
+  response labels) have been temporarily commented out due to insufficient
+  color contrast between elements. May be re-enabled with improved contrast.
 
-The drag interaction is your second-biggest blocker: providing a keyboard
-alternative for setting velocity would make the simulator fully keyboard
-accessible.
-
-Once these two issues are addressed, the remaining items are refinements that
-improve the overall accessibility experience but aren't strictly required for
-WCAG AA compliance.
+REMAINING WORK:
+Both high-priority blocking issues are resolved. Remaining items are
+refinements that improve the overall accessibility experience:
+- Verify canvas text contrast at actual rendering size (item 3)
+- Replace HTML entities in form labels with semantic markup (item 5)
+- Add pause/play controls to animation (item 6)
