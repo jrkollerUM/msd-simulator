@@ -339,20 +339,20 @@ function drawPlot(nowSec) {
   ctx.fillText('Position (m)', 0, 0);
   ctx.restore();
 
-  // Legend (temporarily disabled — colors too similar; may re-enable with better contrast)
-  // const items = [{ label: `R1  ωₙ=${resp1.wn.toFixed(2)} ζ=${resp1.zeta.toFixed(3)}`, color: COLORS.r1 }];
-  // if (resp2) items.push({ label: `R2  ωₙ=${resp2.wn.toFixed(2)} ζ=${resp2.zeta.toFixed(3)}`, color: COLORS.r2 });
-  // let lx = pad.l + 8 * dpr;
-  // ctx.font = `${10 * dpr}px -apple-system, Helvetica, sans-serif`;
-  // items.forEach(item => {
-  //   ctx.fillStyle = item.color;
-  //   ctx.fillRect(lx, pad.t + 4 * dpr, 18 * dpr, 3 * dpr);
-  //   ctx.fillStyle = COLORS.text;
-  //   ctx.textAlign = 'left';
-  //   ctx.textBaseline = 'middle';
-  //   ctx.fillText(item.label, lx + 22 * dpr, pad.t + 5.5 * dpr);
-  //   lx += ctx.measureText(item.label).width + 36 * dpr;
-  // });
+  // Legend — R1 swatch uses #a07800 (amber) instead of raw maize for WCAG contrast
+  const items = [{ label: `R1  ωₙ=${resp1.wn.toFixed(2)} ζ=${resp1.zeta.toFixed(3)}`, color: '#a07800' }];
+  if (resp2) items.push({ label: `R2  ωₙ=${resp2.wn.toFixed(2)} ζ=${resp2.zeta.toFixed(3)}`, color: COLORS.r2 });
+  let lx = pad.l + 8 * dpr;
+  ctx.font = `${10 * dpr}px -apple-system, Helvetica, sans-serif`;
+  items.forEach(item => {
+    ctx.fillStyle = item.color;
+    ctx.fillRect(lx, pad.t + 4 * dpr, 18 * dpr, 3 * dpr);
+    ctx.fillStyle = COLORS.text;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(item.label, lx + 22 * dpr, pad.t + 5.5 * dpr);
+    lx += ctx.measureText(item.label).width + 36 * dpr;
+  });
 }
 
 // ── Pole-Zero Diagram ──────────────────────────────────────────────────────
@@ -603,26 +603,27 @@ function drawAnimation(xPhys, nowSec) {
   ctx.textBaseline = 'middle';
   ctx.fillText('m', massX + L.massW / 2, L.midY);
 
-  // Legend bar (temporarily disabled — colors too similar; may re-enable with better contrast)
-  // const legY  = L.H - L.pad.b / 2;
-  // const legFs = 9.5 * L.dpr;
-  // ctx.font         = `${legFs}px -apple-system, Helvetica, sans-serif`;
-  // ctx.textBaseline = 'middle';
-  // ctx.textAlign    = 'left';
-  // const items = [
-  //   { color: COLORS.spring, label: 'Spring' },
-  //   { color: COLORS.damper, label: 'Damper' },
-  //   { color: activeColor,   label: 'Mass' },
-  //   { color: '#aaaaaa',     label: 'Equilibrium' },
-  // ];
-  // let lx = L.pad.l;
-  // items.forEach(item => {
-  //   ctx.fillStyle = item.color;
-  //   ctx.fillRect(lx, legY - 2 * L.dpr, 14 * L.dpr, 4 * L.dpr);
-  //   ctx.fillStyle = COLORS.textDim;
-  //   ctx.fillText(item.label, lx + 17 * L.dpr, legY);
-  //   lx += ctx.measureText(item.label).width + 26 * L.dpr;
-  // });
+  // Legend bar — Equilibrium swatch uses #888888 (darkened) for WCAG contrast; Mass uses amber when R1
+  const legY  = L.H - L.pad.b / 2;
+  const legFs = 9.5 * L.dpr;
+  ctx.font         = `${legFs}px -apple-system, Helvetica, sans-serif`;
+  ctx.textBaseline = 'middle';
+  ctx.textAlign    = 'left';
+  const massLegColor = animWhich === 2 ? COLORS.r2 : '#a07800';
+  const legItems = [
+    { color: COLORS.spring, label: 'Spring' },
+    { color: COLORS.damper, label: 'Damper' },
+    { color: massLegColor,  label: 'Mass' },
+    { color: '#888888',     label: 'Equilibrium' },
+  ];
+  let lx = L.pad.l;
+  legItems.forEach(item => {
+    ctx.fillStyle = item.color;
+    ctx.fillRect(lx, legY - 2 * L.dpr, 14 * L.dpr, 4 * L.dpr);
+    ctx.fillStyle = COLORS.textDim;
+    ctx.fillText(item.label, lx + 17 * L.dpr, legY);
+    lx += ctx.measureText(item.label).width + 26 * L.dpr;
+  });
 
   // x label
   const xStr = `x = ${xPhys.toFixed(3)} m`;

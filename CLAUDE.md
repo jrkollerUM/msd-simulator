@@ -78,7 +78,7 @@ The app is being brought into WCAG 2.1 AA compliance. See `WCAG_2.1_AA_Complianc
 - Focus ring (3px `#00274C` outline) shown only during keyboard navigation via `:focus-visible`; mouse clicks do not trigger the outline (`:focus { outline: none }` suppresses it)
 - Drag interaction fully preserved; `animCanvas.focus()` was intentionally removed from the mousedown handler to prevent focus ring appearing on drag
 
-**Canvas legends**: Both the animation canvas component legend (Spring/Damper/Mass/Equilibrium) and the position plot response legend (R1/R2 ωₙ/ζ labels) are currently commented out in `simulation.js` due to insufficient color contrast between elements. Search for `// Legend` to locate them for future re-enabling with improved contrast.
+**Canvas legends**: Both the animation canvas component legend (Spring/Damper/Mass/Equilibrium) and the position plot response legend (R1/R2 ωₙ/ζ labels) are active. R1 swatches use `#a07800` (amber) for WCAG contrast; simulation line colors remain unchanged. Search for `// Legend` to locate them.
 
 **Related files**: `WCAG_2.1_AA_Compliance_Report.txt` documents issues and remediation priority.
 
