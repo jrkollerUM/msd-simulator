@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mass-Spring-Damper Simulator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- ── Left sidebar ── -->
+    <aside id="sidebar">
+      <h1>MSD Simulator</h1>
+
+      <!-- Response 1 -->
+      <section class="response-panel" id="r1-panel">
+        <h2 class="resp-title r1-color">Response 1</h2>
+        <div class="param-grid">
+          <label>Mass <span class="unit">(kg)</span></label>
+          <input type="number" id="r1-m"    value="1"  min="0.01" max="100"    step="0.1" />
+          <label>Spring k <span class="unit">(N/m)</span></label>
+          <input type="number" id="r1-k"    value="50" min="0.1"  max="50000"  step="1" />
+          <label>Damping c <span class="unit">(N·s/m)</span></label>
+          <input type="number" id="r1-c"    value="1"  min="0"    max="10000"  step="0.1" />
+          <label>x&#8320; <span class="unit">(m)</span></label>
+          <input type="number" id="r1-x0"   value="1"  min="-10"  max="10"     step="0.5" />
+          <label>v&#8320; <span class="unit">(m/s)</span></label>
+          <input type="number" id="r1-v0"   value="0"  min="-50"  max="50"     step="0.5" />
+          <label>t<sub>end</sub> <span class="unit">(s)</span></label>
+          <input type="number" id="r1-tend" value="10" min="0.1"  max="20"     step="0.5" />
+        </div>
+        <div class="derived-row">
+          <span class="derived-label">&#969;<sub>n</sub></span>
+          <span class="derived-val" id="r1-wn">—</span>
+          <span class="derived-unit">rad/s</span>
+          <span class="derived-label" style="margin-left:1em">&#950;</span>
+          <span class="derived-val" id="r1-zeta">—</span>
+          <span class="derived-unit" id="r1-damp-type"></span>
+        </div>
+      </section>
+
+      <!-- Response 2 toggle -->
+      <div class="toggle-row">
+        <label class="checkbox-label">
+          <input type="checkbox" id="enable-r2" />
+          Enable Response 2
+        </label>
+      </div>
+
+      <!-- Response 2 -->
+      <section class="response-panel" id="r2-panel">
+        <h2 class="resp-title r2-color">Response 2</h2>
+        <div class="param-grid">
+          <label>Mass <span class="unit">(kg)</span></label>
+          <input type="number" id="r2-m"    value="1"  min="0.01" max="100"    step="0.1"  disabled />
+          <label>Spring k <span class="unit">(N/m)</span></label>
+          <input type="number" id="r2-k"    value="50" min="0.1"  max="50000"  step="1"    disabled />
+          <label>Damping c <span class="unit">(N·s/m)</span></label>
+          <input type="number" id="r2-c"    value="1"  min="0"    max="10000"  step="0.1"  disabled />
+          <label>x&#8320; <span class="unit">(m)</span></label>
+          <input type="number" id="r2-x0"   value="1"  min="-10"  max="10"     step="0.5"  disabled />
+          <label>v&#8320; <span class="unit">(m/s)</span></label>
+          <input type="number" id="r2-v0"   value="0"  min="-50"  max="50"     step="0.5"  disabled />
+          <label>t<sub>end</sub> <span class="unit">(s)</span></label>
+          <input type="number" id="r2-tend" value="10" min="0.1"  max="20"     step="0.5"  disabled />
+        </div>
+        <div class="derived-row">
+          <span class="derived-label">&#969;<sub>n</sub></span>
+          <span class="derived-val" id="r2-wn">—</span>
+          <span class="derived-unit">rad/s</span>
+          <span class="derived-label" style="margin-left:1em">&#950;</span>
+          <span class="derived-val" id="r2-zeta">—</span>
+          <span class="derived-unit" id="r2-damp-type"></span>
+        </div>
+      </section>
+
+      <!-- Options -->
+      <div class="options-group">
+        <label class="checkbox-label">
+          <input type="checkbox" id="show-envelope" />
+          Show decay envelopes
+        </label>
+
+        <div class="animate-which-row" id="animate-which-row" style="display:none;">
+          <label>Animate:</label>
+          <select id="animate-which">
+            <option value="1">Response 1</option>
+            <option value="2">Response 2</option>
+          </select>
+        </div>
+      </div>
+
+      <button id="animate-btn">&#9654; Animate</button>
+
+      <button id="export-data-btn">&#8681; Download Data</button>
+
+      <div id="drag-hint">Drag the mass, or focus canvas and press ↑/↓ to adjust velocity</div>
+    </aside>
+
+    <!-- ── Right panel ── -->
+    <main id="vis-panel">
+      <div class="canvas-wrapper">
+        <div class="canvas-title">Animation</div>
+        <canvas id="anim-canvas" tabindex="0" aria-label="Animation of mass position over time" aria-describedby="anim-description"></canvas>
+        <div id="anim-description" role="region" aria-live="polite" class="sr-only"></div>
+      </div>
+      <div class="canvas-wrapper">
+        <div class="canvas-title">Position vs. Time</div>
+        <canvas id="plot-canvas" aria-label="Position versus time plot"></canvas>
+        <div id="plot-description" role="region" aria-live="polite" class="sr-only"></div>
+      </div>
+      <div class="canvas-wrapper">
+        <div class="canvas-title">Characteristic Roots</div>
+        <canvas id="poles-canvas" aria-label="Characteristic roots or pole locations in the complex plane"></canvas>
+        <div id="poles-description" role="region" aria-live="polite" class="sr-only"></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="simulation.js"></script>
+</body>
+</html>
