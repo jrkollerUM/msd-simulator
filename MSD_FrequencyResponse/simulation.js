@@ -51,16 +51,17 @@ function systemProps(p) {
   return { wn, zeta };
 }
 
-// Steady-state particular solution coefficients for F0*sin(w*t).
+// Steady-state particular solution coefficients for F0*cos(w*t).
 // x_p(t) = Xc*cos(w*t) + Xs*sin(w*t)
+// At w=0 this collapses to Xc = F0/k (static deflection), giving a step response.
 function particularCoeffs(p, wn, zeta) {
   const { F0, w, m } = p;
   if (F0 === 0) return { Xc: 0, Xs: 0 };
   const f0    = F0 / m;
   const delta = Math.pow(wn * wn - w * w, 2) + Math.pow(2 * zeta * w * wn, 2);
   if (delta < 1e-12) return { Xc: 0, Xs: 0 };
-  const Xc = -(2 * zeta * w * wn) * f0 / delta;
-  const Xs = (wn * wn - w * w)    * f0 / delta;
+  const Xc = (wn * wn - w * w)    * f0 / delta;
+  const Xs = (2 * zeta * w * wn)  * f0 / delta;
   return { Xc, Xs };
 }
 
@@ -105,7 +106,7 @@ function computeResponse(p) {
     const xp = Xc * Math.cos(w * ti) + Xs * Math.sin(w * ti);
 
     x[i] = xh + xp;
-    F[i] = F0 * Math.sin(w * ti);
+    F[i] = F0 * Math.cos(w * ti);
   }
 
   // Operating point on FR curves
@@ -825,9 +826,9 @@ function drawAnimation(xPhys, nowSec) {
   ctx.textBaseline = 'middle';
   ctx.fillText('m', massCX, L.midY);
 
-  // Force arrow on the mass (scales with sin(w*nowSec))
+  // Force arrow on the mass (scales with cos(w*nowSec))
   const p = getParams();
-  const arrowScale = (p.F0 > 0) ? Math.sin(p.w * (nowSec || 0)) : 0;
+  const arrowScale = (p.F0 > 0) ? Math.cos(p.w * (nowSec || 0)) : 0;
   if (Math.abs(arrowScale) > 1e-3) {
     const arrowLenMax = L.massW * 0.9;
     const arrowLen    = arrowLenMax * arrowScale; // signed
@@ -878,7 +879,7 @@ function drawAnimation(xPhys, nowSec) {
 
   // x readout
   const xStr = `x = ${xPhys.toFixed(3)} m`;
-  const fStr = `F = ${(p.F0 * Math.sin(p.w * (nowSec || 0))).toFixed(2)} N`;
+  const fStr = `F = ${(p.F0 * Math.cos(p.w * (nowSec || 0))).toFixed(2)} N`;
   ctx.fillStyle    = COLORS.textDim;
   ctx.font         = `${9.5 * L.dpr}px -apple-system, Helvetica, sans-serif`;
   ctx.textAlign    = 'right';
