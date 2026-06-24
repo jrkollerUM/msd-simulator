@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MSD Base Excitation Simulator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- ── Left sidebar ── -->
+    <aside id="sidebar">
+      <h1>MSD Base Excitation</h1>
+
+      <section class="response-panel">
+        <h2 class="resp-title r2-color">Parameters</h2>
+        <div class="param-grid">
+          <label>Mass <span class="unit">(kg)</span></label>
+          <input type="number" id="be-m"    value="1"    min="0.01" max="100"   step="0.1" />
+          <label>Spring k <span class="unit">(N/m)</span></label>
+          <input type="number" id="be-k"    value="50"   min="0.1"  max="50000" step="1" />
+          <label>Damping c <span class="unit">(N·s/m)</span></label>
+          <input type="number" id="be-c"    value="1"    min="0"    max="10000" step="0.1" />
+          <label>Base ampl. Y <span class="unit">(m)</span></label>
+          <input type="number" id="be-Y"    value="0.05" min="0"    max="1"     step="0.01" />
+          <label>Freq &#969; <span class="unit">(rad/s)</span></label>
+          <input type="number" id="be-w"    value="5"    min="0"    max="50"    step="0.1" />
+          <label>x&#8320; <span class="unit">(m)</span></label>
+          <input type="number" id="be-x0"   value="0"    min="-10"  max="10"    step="0.5" />
+          <label>v&#8320; <span class="unit">(m/s)</span></label>
+          <input type="number" id="be-v0"   value="0"    min="-50"  max="50"    step="0.5" />
+          <label>t<sub>end</sub> <span class="unit">(s)</span></label>
+          <input type="number" id="be-tend" value="10"   min="0.1"  max="30"    step="0.5" />
+        </div>
+      </section>
+
+      <section class="derived-panel">
+        <div class="derived-row">
+          <span class="derived-label">&#969;<sub>n</sub></span>
+          <span class="derived-val" id="be-wn">—</span>
+          <span class="derived-unit">rad/s</span>
+        </div>
+        <div class="derived-row">
+          <span class="derived-label">&#950;</span>
+          <span class="derived-val" id="be-zeta">—</span>
+          <span class="derived-unit" id="be-damp-type"></span>
+        </div>
+        <div class="derived-row">
+          <span class="derived-label">T</span>
+          <span class="derived-val" id="be-T">—</span>
+          <span class="derived-unit">|X/Y|</span>
+        </div>
+        <div class="derived-row">
+          <span class="derived-label">r</span>
+          <span class="derived-val" id="be-r">—</span>
+          <span class="derived-unit">&#969;/&#969;<sub>n</sub></span>
+        </div>
+        <div class="derived-row">
+          <span class="derived-label">&#966;</span>
+          <span class="derived-val" id="be-phi">—</span>
+          <span class="derived-unit">deg</span>
+        </div>
+      </section>
+
+      <button id="animate-btn">&#9654; Animate</button>
+      <button id="export-data-btn">&#8681; Download Data</button>
+
+      <div id="drag-hint">Base motion: y(t) = Y cos(&#969;t)<br/>&#969; = 0 gives a static offset.</div>
+
+      <a href="../index.html" id="back-link">&#8592; Back to simulators</a>
+    </aside>
+
+    <!-- ── Right panel ── -->
+    <main id="vis-panel">
+      <div class="canvas-wrapper anim-wrapper">
+        <div class="canvas-title">Animation</div>
+        <canvas id="anim-canvas" tabindex="0" aria-label="Animation of mass position with harmonic base excitation" aria-describedby="anim-description"></canvas>
+        <div id="anim-description" role="region" aria-live="polite" class="sr-only"></div>
+      </div>
+
+      <div class="canvas-wrapper plot-wrapper">
+        <div class="tab-strip" role="tablist" aria-label="Base excitation response plots">
+          <button role="tab" id="tab-pos"     class="tab-btn active" aria-selected="true"  aria-controls="panel-pos"     tabindex="0">Position</button>
+          <button role="tab" id="tab-posbase" class="tab-btn"        aria-selected="false" aria-controls="panel-posbase" tabindex="-1">Position &amp; Base</button>
+          <button role="tab" id="tab-mag"     class="tab-btn"        aria-selected="false" aria-controls="panel-mag"     tabindex="-1">Magnitude FR</button>
+          <button role="tab" id="tab-phase"   class="tab-btn"        aria-selected="false" aria-controls="panel-phase"   tabindex="-1">Phase FR</button>
+        </div>
+
+        <div class="tab-panel"          role="tabpanel" id="panel-pos"     aria-labelledby="tab-pos">
+          <canvas id="pos-canvas" aria-label="Mass position versus time plot"></canvas>
+          <div id="pos-description" role="region" aria-live="polite" class="sr-only"></div>
+        </div>
+        <div class="tab-panel hidden" role="tabpanel" id="panel-posbase" aria-labelledby="tab-posbase">
+          <canvas id="posbase-canvas" aria-label="Mass position and base displacement versus time plot"></canvas>
+          <div id="posbase-description" role="region" aria-live="polite" class="sr-only"></div>
+        </div>
+        <div class="tab-panel hidden" role="tabpanel" id="panel-mag"     aria-labelledby="tab-mag">
+          <canvas id="mag-canvas" aria-label="Displacement transmissibility magnitude plot"></canvas>
+          <div id="mag-description" role="region" aria-live="polite" class="sr-only"></div>
+        </div>
+        <div class="tab-panel hidden" role="tabpanel" id="panel-phase"   aria-labelledby="tab-phase">
+          <canvas id="phase-canvas" aria-label="Displacement transmissibility phase plot"></canvas>
+          <div id="phase-description" role="region" aria-live="polite" class="sr-only"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="simulation.js"></script>
+</body>
+</html>
