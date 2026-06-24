@@ -782,8 +782,22 @@ animCanvas.addEventListener('keydown', e => {
 });
 
 // ── Event wiring ──────────────────────────────────────────────────────────
+function clampInputToBounds(el) {
+  const v = parseFloat(el.value);
+  if (!isFinite(v)) return;
+  const min = parseFloat(el.min);
+  const max = parseFloat(el.max);
+  let clamped = v;
+  if (isFinite(min) && clamped < min) clamped = min;
+  if (isFinite(max) && clamped > max) clamped = max;
+  if (clamped !== v) el.value = clamped;
+}
+
 const allInputs = document.querySelectorAll('input[type="number"], input[type="checkbox"], select');
 allInputs.forEach(el => el.addEventListener('input', () => { if (!dragActive) update(); }));
+document.querySelectorAll('input[type="number"]').forEach(el => {
+  el.addEventListener('change', () => { clampInputToBounds(el); update(); });
+});
 
 document.getElementById('enable-r2').addEventListener('change', e => {
   r2Enabled = e.target.checked;

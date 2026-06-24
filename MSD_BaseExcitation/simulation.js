@@ -983,8 +983,20 @@ tabConfig.forEach((tc, idx) => {
 });
 
 // ── Input wiring ───────────────────────────────────────────────────────────
+function clampInputToBounds(el) {
+  const v = parseFloat(el.value);
+  if (!isFinite(v)) return;
+  const min = parseFloat(el.min);
+  const max = parseFloat(el.max);
+  let clamped = v;
+  if (isFinite(min) && clamped < min) clamped = min;
+  if (isFinite(max) && clamped > max) clamped = max;
+  if (clamped !== v) el.value = clamped;
+}
+
 document.querySelectorAll('input[type="number"]').forEach(el => {
   el.addEventListener('input', () => update());
+  el.addEventListener('change', () => { clampInputToBounds(el); update(); });
 });
 
 // ── Resize observer ────────────────────────────────────────────────────────
