@@ -31,6 +31,8 @@ const phaseCtx    = phaseCanvas.getContext('2d');
 // ── Input helpers ──────────────────────────────────────────────────────────
 const getNum = id => parseFloat(document.getElementById(id).value) || 0;
 
+let waveform = 'sin'; // 'sin' (default) or 'cos'
+
 function getParams() {
   return {
     m:    Math.min(100,   Math.max(0.01,  getNum('fr-m'))),
@@ -41,6 +43,7 @@ function getParams() {
     x0:   Math.min(10,    Math.max(-10,   getNum('fr-x0'))),
     v0:   Math.min(50,    Math.max(-50,   getNum('fr-v0'))),
     tend: Math.min(30,    Math.max(0.1,   getNum('fr-tend'))),
+    waveform,
   };
 }
 
@@ -67,14 +70,23 @@ function particularCoeffs(p, wn, zeta) {
 
 // Closed-form total response: x(t) = x_h(t) + x_p(t),
 // where x_h satisfies x(0)=x0, x'(0)=v0 with the particular subtracted out.
+//
+// Particular coefficients (Xc, Xs) come from a cos-driven derivation. To
+// support sin forcing without re-deriving, substitute cos→sin and sin→−cos
+// in the particular solution. Equivalently:
+//   cos: xp(t) = Xc cos + Xs sin,   xp(0) =  Xc,   xp'(0) =  Xs·w
+//   sin: xp(t) = Xc sin − Xs cos,   xp(0) = −Xs,   xp'(0) =  Xc·w
 function computeResponse(p) {
   const { wn, zeta } = systemProps(p);
   const { Xc, Xs }   = particularCoeffs(p, wn, zeta);
-  const { x0, v0, tend, F0, w } = p;
+  const { x0, v0, tend, F0, w, waveform } = p;
+  const isSin = waveform === 'sin';
 
-  // Homogeneous initial conditions: total ICs minus particular at t=0
-  const xh0 = x0 - Xc;
-  const vh0 = v0 - Xs * w;
+  // Particular evaluated at t=0, used to pick homogeneous ICs
+  const xp0 = isSin ? -Xs       :  Xc;
+  const vp0 = isSin ?  Xc * w   :  Xs * w;
+  const xh0 = x0 - xp0;
+  const vh0 = v0 - vp0;
 
   const N = Math.ceil(tend * FPS) + 1;
   const t = new Float64Array(N);
@@ -102,11 +114,12 @@ function computeResponse(p) {
       xh = (xh0 + (vh0 + xh0 * wn) * ti) * Math.exp(-wn * ti);
     }
 
-    // Particular part
-    const xp = Xc * Math.cos(w * ti) + Xs * Math.sin(w * ti);
+    const cw = Math.cos(w * ti);
+    const sw = Math.sin(w * ti);
+    const xp = isSin ? (Xc * sw - Xs * cw) : (Xc * cw + Xs * sw);
 
     x[i] = xh + xp;
-    F[i] = F0 * Math.cos(w * ti);
+    F[i] = isSin ? F0 * sw : F0 * cw;
   }
 
   // Operating point on FR curves
@@ -167,8 +180,8 @@ function updateA11yDescriptions() {
 
   document.getElementById('anim-description').textContent =
     `Mass-spring-damper with harmonic forcing. Natural frequency ${fmt(resp.wn, 3)} rad/s, ` +
-    `damping ratio ${fmt(resp.zeta, 4)} (${type}). Applied force amplitude ${fmt(p.F0, 2)} N, ` +
-    `applied frequency ${fmt(p.w, 2)} rad/s. Initial position ${fmt(p.x0, 2)} m, initial velocity ${fmt(p.v0, 2)} m/s.`;
+    `damping ratio ${fmt(resp.zeta, 4)} (${type}). Applied force F(t) = ${fmt(p.F0, 2)} ${p.waveform}(${fmt(p.w, 2)}t) N. ` +
+    `Initial position ${fmt(p.x0, 2)} m, initial velocity ${fmt(p.v0, 2)} m/s.`;
 
   const xMax = maxAbs(resp.x);
   document.getElementById('pos-description').textContent =
@@ -826,9 +839,11 @@ function drawAnimation(xPhys, nowSec) {
   ctx.textBaseline = 'middle';
   ctx.fillText('m', massCX, L.midY);
 
-  // Force arrow on the mass (scales with cos(w*nowSec))
+  // Force arrow on the mass (scales with the active waveform at nowSec)
   const p = getParams();
-  const arrowScale = (p.F0 > 0) ? Math.cos(p.w * (nowSec || 0)) : 0;
+  const wt = p.w * (nowSec || 0);
+  const fNow = p.waveform === 'sin' ? Math.sin(wt) : Math.cos(wt);
+  const arrowScale = (p.F0 > 0) ? fNow : 0;
   if (Math.abs(arrowScale) > 1e-3) {
     const arrowLenMax = L.massW * 0.9;
     const arrowLen    = arrowLenMax * arrowScale; // signed
@@ -879,7 +894,7 @@ function drawAnimation(xPhys, nowSec) {
 
   // x readout
   const xStr = `x = ${xPhys.toFixed(3)} m`;
-  const fStr = `F = ${(p.F0 * Math.cos(p.w * (nowSec || 0))).toFixed(2)} N`;
+  const fStr = `F = ${(p.F0 * fNow).toFixed(2)} N`;
   ctx.fillStyle    = COLORS.textDim;
   ctx.font         = `${9.5 * L.dpr}px -apple-system, Helvetica, sans-serif`;
   ctx.textAlign    = 'right';
@@ -977,6 +992,22 @@ tabConfig.forEach((tc, idx) => {
 });
 
 // ── Input wiring ───────────────────────────────────────────────────────────
+// ── Waveform toggle (sin / cos) ───────────────────────────────────────────
+const waveformBtns = document.querySelectorAll('.seg-btn[data-waveform]');
+waveformBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const next = btn.dataset.waveform;
+    if (next === waveform) return;
+    waveform = next;
+    waveformBtns.forEach(b => {
+      const isActive = b.dataset.waveform === waveform;
+      b.classList.toggle('active', isActive);
+      b.setAttribute('aria-checked', isActive ? 'true' : 'false');
+    });
+    update();
+  });
+});
+
 function clampInputToBounds(el) {
   const v = parseFloat(el.value);
   if (!isFinite(v)) return;
