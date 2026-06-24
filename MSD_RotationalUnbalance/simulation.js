@@ -72,14 +72,23 @@ function particularCoeffs(p, wn, zeta, E) {
 }
 
 // Closed-form total response: x(t) = x_h(t) + x_p(t).
+//
+// Arm angle starts vertical at t=0: θ(t) = π/2 + ω·t. The horizontal
+// component of the centripetal force on the block is m₀·l·ω²·cos(θ),
+// which becomes F(t) = −m₀·l·ω²·sin(ω·t). At t=0 there is no horizontal
+// kick so the system avoids an artificial transient.
+//
+// Equivalently, the standard-form forcing is −E·ω²·sin(ωt). With cos-derived
+// coefficients (Xc, Xs), the particular solution becomes
+//   xp(t) = −Xc·sin(ωt) + Xs·cos(ωt),
+//   xp(0) = Xs,   xp'(0) = −Xc·ω.
 function computeResponse(p) {
   const { wn, zeta, E } = systemProps(p);
   const { Xc, Xs }      = particularCoeffs(p, wn, zeta, E);
   const { x0, v0, tend, m0, l, w } = p;
 
-  // Particular at t=0: xp(0) = Xc, xp'(0) = Xs·w  (cos forcing only)
-  const xh0 = x0 - Xc;
-  const vh0 = v0 - Xs * w;
+  const xh0 = x0 - Xs;
+  const vh0 = v0 + Xc * w;
 
   const N = Math.ceil(tend * FPS) + 1;
   const t = new Float64Array(N);
@@ -111,8 +120,8 @@ function computeResponse(p) {
 
     const cw = Math.cos(w * ti);
     const sw = Math.sin(w * ti);
-    x[i] = xh + Xc * cw + Xs * sw;
-    F[i] = Famp * cw;
+    x[i] = xh + (-Xc * sw + Xs * cw);
+    F[i] = -Famp * sw;
   }
 
   // Operating point on FR curves
@@ -766,6 +775,57 @@ function drawAnimation(xPhys, nowSec) {
   ctx.stroke();
   ctx.setLineDash([]);
 
+  // Ground rails — top and bottom of the block, indicating that motion is
+  // constrained to horizontal. Diagonal hatching shows the constrained side.
+  const railGap   = 4 * L.dpr;
+  const railThick = 3 * L.dpr;
+  const blockTopY = L.massY;
+  const blockBotY = L.massY + L.massH;
+  const railLeft  = L.wallX;
+  const railRight = L.W - L.pad.r;
+
+  // Top rail (constraint surface above the block)
+  const topRailY = blockTopY - railGap - railThick;
+  ctx.fillStyle = '#e0e0e5';
+  ctx.fillRect(railLeft, topRailY, railRight - railLeft, railThick);
+  ctx.strokeStyle = '#b0b0b8';
+  ctx.lineWidth   = 1.2 * L.dpr;
+  ctx.beginPath();
+  ctx.moveTo(railLeft,  topRailY + railThick);
+  ctx.lineTo(railRight, topRailY + railThick);
+  ctx.stroke();
+  // Hatch above (away from the block)
+  ctx.strokeStyle = '#c8c8d0';
+  ctx.lineWidth   = 0.8 * L.dpr;
+  const railHatchStep = 8 * L.dpr;
+  const hatchLen      = 6 * L.dpr;
+  for (let xx = railLeft; xx < railRight; xx += railHatchStep) {
+    ctx.beginPath();
+    ctx.moveTo(xx, topRailY);
+    ctx.lineTo(xx - hatchLen, topRailY - hatchLen);
+    ctx.stroke();
+  }
+
+  // Bottom rail (constraint surface below the block)
+  const botRailY = blockBotY + railGap;
+  ctx.fillStyle = '#e0e0e5';
+  ctx.fillRect(railLeft, botRailY, railRight - railLeft, railThick);
+  ctx.strokeStyle = '#b0b0b8';
+  ctx.lineWidth   = 1.2 * L.dpr;
+  ctx.beginPath();
+  ctx.moveTo(railLeft,  botRailY);
+  ctx.lineTo(railRight, botRailY);
+  ctx.stroke();
+  // Hatch below
+  ctx.strokeStyle = '#c8c8d0';
+  ctx.lineWidth   = 0.8 * L.dpr;
+  for (let xx = railLeft; xx < railRight; xx += railHatchStep) {
+    ctx.beginPath();
+    ctx.moveTo(xx, botRailY + railThick);
+    ctx.lineTo(xx - hatchLen, botRailY + railThick + hatchLen);
+    ctx.stroke();
+  }
+
   // Wall
   const wallBot = L.H - L.pad.b;
   ctx.fillStyle = '#e0e0e5';
@@ -825,9 +885,11 @@ function drawAnimation(xPhys, nowSec) {
   ctx.textBaseline = 'middle';
   ctx.fillText('m', massCX, L.midY);
 
-  // Rotating-unbalance mechanism on top of the block
+  // Rotating-unbalance mechanism on top of the block.
+  // Start vertical at t=0 so the initial horizontal force component is zero:
+  // θ(t) = π/2 + ω·t (CCW). The arm tip is straight up at t=0.
   const p = getParams();
-  const theta = p.w * (nowSec || 0);
+  const theta = Math.PI / 2 + p.w * (nowSec || 0);
   // Pivot anchored at top-center of the block (just inside the top edge).
   const pivotX = massCX;
   const pivotY = L.massY + 4 * L.dpr;
