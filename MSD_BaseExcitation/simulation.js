@@ -509,16 +509,26 @@ function drawMagPlot() {
 
   drawGrid(ctx, pad, pw, ph, 5, 5);
 
-  // r=1 dashed reference line
+  // r=1 dashed reference (gray)
   ctx.strokeStyle = '#888';
   ctx.lineWidth   = 1 * dpr;
   ctx.setLineDash([5 * dpr, 4 * dpr]);
   ctx.beginPath();
   ctx.moveTo(toX(1), pad.t); ctx.lineTo(toX(1), pad.t + ph);
   ctx.stroke();
-  // r=√2 reference (transmissibility = 1 crossover)
+  ctx.setLineDash([]);
+
+  // Isolation boundary marker at (r=√2, T=1):
+  //  • horizontal segment at T=1 from r=0 to r=√2
+  //  • vertical segment at r=√2 from T=1 down to T=0
+  // Drawn in maize so it's distinct from the gray r=1 reference.
+  ctx.strokeStyle = COLORS.r1Dark;
+  ctx.lineWidth   = 1.2 * dpr;
+  ctx.setLineDash([5 * dpr, 4 * dpr]);
   ctx.beginPath();
-  ctx.moveTo(toX(Math.SQRT2), pad.t); ctx.lineTo(toX(Math.SQRT2), pad.t + ph);
+  ctx.moveTo(toX(0),           toY(1));
+  ctx.lineTo(toX(Math.SQRT2),  toY(1));
+  ctx.lineTo(toX(Math.SQRT2),  toY(0));
   ctx.stroke();
   ctx.setLineDash([]);
 
