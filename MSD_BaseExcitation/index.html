@@ -32,6 +32,14 @@
           <label>t<sub>end</sub> <span class="unit">(s)</span></label>
           <input type="number" id="be-tend" value="10"   min="0.1"  max="30"    step="0.5" />
         </div>
+
+        <div class="waveform-row" role="radiogroup" aria-label="Input waveform">
+          <span class="waveform-label">Input Waveform</span>
+          <div class="seg-toggle">
+            <button type="button" role="radio" aria-checked="true"  class="seg-btn active" data-waveform="sin">sin</button>
+            <button type="button" role="radio" aria-checked="false" class="seg-btn"        data-waveform="cos">cos</button>
+          </div>
+        </div>
       </section>
 
       <section class="derived-panel">
@@ -65,7 +73,7 @@
       <button id="animate-btn">&#9654; Animate</button>
       <button id="export-data-btn">&#8681; Download Data</button>
 
-      <div id="drag-hint">Base motion: y(t) = Y cos(&#969;t)<br/>&#969; = 0 gives a static offset.</div>
+      <div id="drag-hint">Base motion: y(t) = Y sin(&#969;t) or Y cos(&#969;t)<br/>&#969; = 0 with cos gives a static offset.</div>
 
       <a href="../index.html" id="back-link">&#8592; Back to simulators</a>
     </aside>

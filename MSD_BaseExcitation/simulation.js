@@ -30,6 +30,8 @@ const phaseCtx   = phaseCanvas.getContext('2d');
 // ── Input helpers ──────────────────────────────────────────────────────────
 const getNum = id => parseFloat(document.getElementById(id).value) || 0;
 
+let waveform = 'sin'; // 'sin' (default) or 'cos'
+
 function getParams() {
   return {
     m:    Math.min(100,   Math.max(0.01,  getNum('be-m'))),
@@ -40,6 +42,7 @@ function getParams() {
     x0:   Math.min(10,    Math.max(-10,   getNum('be-x0'))),
     v0:   Math.min(50,    Math.max(-50,   getNum('be-v0'))),
     tend: Math.min(30,    Math.max(0.1,   getNum('be-tend'))),
+    waveform,
   };
 }
 
@@ -67,14 +70,22 @@ function particularCoeffs(p, wn, zeta) {
 }
 
 // Closed-form total response: x(t) = x_h(t) + x_p(t).
+//
+// Particular coefficients (Xc, Xs) are derived for cos-driven base motion.
+// For sin input we substitute cos→sin and sin→−cos in xp:
+//   cos: xp(t) = Xc cos + Xs sin,   xp(0) =  Xc,   xp'(0) =  Xs·w
+//   sin: xp(t) = Xc sin − Xs cos,   xp(0) = −Xs,   xp'(0) =  Xc·w
 function computeResponse(p) {
   const { wn, zeta } = systemProps(p);
   const { Xc, Xs }   = particularCoeffs(p, wn, zeta);
-  const { x0, v0, tend, Y, w } = p;
+  const { x0, v0, tend, Y, w, waveform } = p;
+  const isSin = waveform === 'sin';
 
-  // Homogeneous initial conditions: total ICs minus particular at t=0
-  const xh0 = x0 - Xc;
-  const vh0 = v0 - Xs * w;
+  // Particular evaluated at t=0, used to pick homogeneous ICs
+  const xp0 = isSin ? -Xs       :  Xc;
+  const vp0 = isSin ?  Xc * w   :  Xs * w;
+  const xh0 = x0 - xp0;
+  const vh0 = v0 - vp0;
 
   const N = Math.ceil(tend * FPS) + 1;
   const t = new Float64Array(N);
@@ -102,10 +113,12 @@ function computeResponse(p) {
       xh = (xh0 + (vh0 + xh0 * wn) * ti) * Math.exp(-wn * ti);
     }
 
-    const xp = Xc * Math.cos(w * ti) + Xs * Math.sin(w * ti);
+    const cw = Math.cos(w * ti);
+    const sw = Math.sin(w * ti);
+    const xp = isSin ? (Xc * sw - Xs * cw) : (Xc * cw + Xs * sw);
 
     x[i] = xh + xp;
-    yArr[i] = Y * Math.cos(w * ti);
+    yArr[i] = isSin ? Y * sw : Y * cw;
   }
 
   // Operating point on FR curves
@@ -169,8 +182,8 @@ function updateA11yDescriptions() {
 
   document.getElementById('anim-description').textContent =
     `Mass-spring-damper with harmonic base excitation. Natural frequency ${fmt(resp.wn, 3)} rad/s, ` +
-    `damping ratio ${fmt(resp.zeta, 4)} (${type}). Base amplitude ${fmt(p.Y, 3)} m, ` +
-    `base frequency ${fmt(p.w, 2)} rad/s. Initial position ${fmt(p.x0, 2)} m, initial velocity ${fmt(p.v0, 2)} m/s.`;
+    `damping ratio ${fmt(resp.zeta, 4)} (${type}). Base motion y(t) = ${fmt(p.Y, 3)} ${p.waveform}(${fmt(p.w, 2)}t) m. ` +
+    `Initial position ${fmt(p.x0, 2)} m, initial velocity ${fmt(p.v0, 2)} m/s.`;
 
   const xMax = maxAbs(resp.x);
   document.getElementById('pos-description').textContent =
@@ -922,7 +935,8 @@ function animFrame(ts) {
   if (elap >= tend) { stopAnimation(); return; }
   const i = Math.min(Math.round(elap * FPS), resp.x.length - 1);
   const p = getParams();
-  const yi = p.Y * Math.cos(p.w * elap);
+  const wt = p.w * elap;
+  const yi = p.waveform === 'sin' ? p.Y * Math.sin(wt) : p.Y * Math.cos(wt);
   drawAnimation(resp.x[i], yi, elap);
   if (activeTab === 'pos')     drawPositionPlot(elap);
   if (activeTab === 'posbase') drawPositionBasePlot(elap);
@@ -983,6 +997,22 @@ tabConfig.forEach((tc, idx) => {
 });
 
 // ── Input wiring ───────────────────────────────────────────────────────────
+// ── Waveform toggle (sin / cos) ───────────────────────────────────────────
+const waveformBtns = document.querySelectorAll('.seg-btn[data-waveform]');
+waveformBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const next = btn.dataset.waveform;
+    if (next === waveform) return;
+    waveform = next;
+    waveformBtns.forEach(b => {
+      const isActive = b.dataset.waveform === waveform;
+      b.classList.toggle('active', isActive);
+      b.setAttribute('aria-checked', isActive ? 'true' : 'false');
+    });
+    update();
+  });
+});
+
 function clampInputToBounds(el) {
   const v = parseFloat(el.value);
   if (!isFinite(v)) return;
