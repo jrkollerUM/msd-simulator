@@ -17,7 +17,7 @@
    - **Guided example 2** (~30 min) — more complex problem, may build on example 1
    - **Synthesis / wrap-up or look-ahead** (~20 min) — instructor-led connection of concepts or preview of next session
 3. **No standalone "math review" block.** ODEs, Laplace, and linearization are taught *inline* the first time they are needed — students who need a refresher use the Canvas prereq module on their own schedule.
-4. **Modeling depth ≥ controls depth.** Modeling unit is compressed but not gutted — mechanical, electrical, electromechanical remain core. Compression comes from removing the redundant front-loaded math review, not the modeling itself.
+4. **Modeling depth ≥ controls depth.** Modeling module is compressed but not gutted — mechanical, electrical, electromechanical remain core. Compression comes from removing the redundant front-loaded math review, not the modeling itself.
 5. **Controls expands to ~⅓ of the course.** From 5 sessions to 9 sessions, covering classical design (root locus + light Bode) instead of high-level PID only.
 6. **Portable to both sections.** All artifacts (videos, slides, worksheets, exams) live in a shared repository. Section-specific only in delivery style, not content.
 
@@ -51,57 +51,57 @@ A self-paced review module with the prereq topics. Items are short (5–10 min e
 
 Format: **W#.S#** = Week, Session. Each session has a 15–20 min pre-work video (`PW`) and an in-class guided problem set (`IC`).
 
-### Unit 1 — Foundations & Mechanical Modeling (Weeks 1–4, 8 sessions)
+### Module 1 — Foundations & Mechanical Modeling (Weeks 1–4, 7 sessions)
 
 | Session | Topic | PW Video | In-Class Focus |
 |---|---|---|---|
 | W1.S1 | Course intro + prereq diagnostic | "Welcome to ME 360: course intro, Canvas navigation, and Day 1 prereq assessment preview" — points students to the async prereq module | Diagnostic + motivating demos + course logistics |
 | W1.S2 | What's a dynamic system? ODE → response intuition | "From physics to ODEs to response" | Classify 3 systems; identify inputs/outputs/states |
-| W2.S1 | Linearization about an operating point | "Linearization in 15 min" | Linearize 3 nonlinear systems (pendulum, tank, motor) |
-| W2.S2 | Translational mechanical systems | "Springs, dampers, masses — modeling rules" | Derive EOM for 2-mass spring-damper chain |
-| W3.S1 | Rotational mechanical systems | "Rotational analogs + gears" | Derive EOM for gear train + flywheel |
-| W3.S2 | Mixed translation/rotation, free-body diagrams | "Constraints and coupling" | Derive EOM for rack-and-pinion, pulley systems |
-| W4.S1 | State-space representation | "State variables and why we use them" | Convert 3 EOMs to state-space form |
-| W4.S2 | Modeling synthesis + computational solution (MATLAB) | "ode45 for state-space models" | Build & simulate a 2-DOF suspension model |
+| W2.S1 | Translational mechanical systems | "Springs, dampers, masses — modeling rules" | Derive EOM for 2-mass spring-damper chain |
+| W2.S2 | Rotational mechanical systems | "Rotational analogs + gears" | Derive EOM for gear train + flywheel |
+| W3.S1 | Mixed translation/rotation, free-body diagrams | "Constraints and coupling" | Derive EOM for rack-and-pinion, pulley systems |
+| W3.S2 | State-space representation | "State variables and why we use them" | Convert 3 EOMs to state-space form |
+| W4.S1 | Modeling synthesis + computational solution (MATLAB) | "ode45 for state-space models" | Build & simulate a 2-DOF suspension model |
+| W4.S2 | **Exam 1** (Modeling + state-space) | — | — |
 
-### Unit 2 — Laplace Domain & System Response (Weeks 5–7, 6 sessions)
+### Module 2 — Laplace Domain, Linearization & System Response (Weeks 5–8, 7 sessions)
 
 | Session | Topic | PW Video | In-Class Focus |
 |---|---|---|---|
 | W5.S1 | Laplace transforms (just-in-time, mechanics only) | "Laplace as a tool, not a theory" | Apply Laplace to 3 ODEs; recognize standard pairs |
-| W5.S2 | Transfer functions from EOMs | "EOMs → TFs in 4 steps" | Derive TFs for the systems built in Unit 1 |
-| W6.S1 | **Exam 1** (Modeling + state-space + intro Laplace) | — | — |
+| W5.S2 | Transfer functions from EOMs | "EOMs → TFs in 4 steps" | Derive TFs for the systems built in Module 1 |
+| W6.S1 | Linearization about an operating point | "Linearization in 15 min" | Linearize 3 nonlinear systems (pendulum, tank, motor) |
 | W6.S2 | 1st-order response (time constant, step response) | "τ and what it tells you" | Identify τ from data; predict response shape |
 | W7.S1 | 2nd-order response — underdamped, ζ, ω_n, ω_d | "ζ, ω_n, and the response anatomy" | Match step responses to (ζ, ω_n); rise/settling time formulas |
 | W7.S2 | 2nd-order response — over/critical damping; pole locations | "Reading the s-plane" | Map pole locations ↔ time response shapes |
+| W8.S1 | Response analysis synthesis (MATLAB: step, impulse, lsim) | "MATLAB for response analysis" | Simulate and compare responses across system types |
 
-### Unit 3 — Electrical, Electromechanical, & Frequency Response (Weeks 8–10, 6 sessions)
+### Module 3 — Electrical, Electromechanical, & Frequency Response (Weeks 8–10, 5 sessions)
 
 | Session | Topic | PW Video | In-Class Focus |
 |---|---|---|---|
-| W8.S1 | Electrical systems — RLC modeling | "Kirchhoff + impedance shortcuts" | Derive TF for 3 RLC circuits |
-| W8.S2 | Electromechanical — DC motor | "DC motor: 2 equations, 1 system" | Build DC motor TF + state-space; identify parameters |
+| W8.S2 | Electrical systems — RLC modeling | "Kirchhoff + impedance shortcuts" | Derive TF for 3 RLC circuits |
 | W9.S1 | **(Spring break, no class)** | — | — |
 | W9.S2 | **(Spring break, no class)** | — | — |
-| W10.S1 | Frequency response concept — sinusoidal steady state | "Why systems care about frequency" | Compute |G(jω)| at specific frequencies; sketch by hand |
-| W10.S2 | Bode plots — sketching from poles/zeros (light) | "Bode sketching rules in 15 min" | Sketch Bode for 4 TFs; read margins from given plots |
+| W10.S1 | Electromechanical — DC motor | "DC motor: 2 equations, 1 system" | Build DC motor TF + state-space; identify parameters |
+| W10.S2 | Frequency response concept — sinusoidal steady state | "Why systems care about frequency" | Compute |G(jω)| at specific frequencies; sketch by hand |
+| W11.S1 | Bode plots — sketching from poles/zeros (light) | "Bode sketching rules in 15 min" | Sketch Bode for 4 TFs; read margins from given plots |
+| W11.S2 | **Exam 2** (Laplace + linearization + response + freq response intro) | — | — |
 
-### Unit 4 — Control Systems (Weeks 11–15, 9 sessions)
+### Module 4 — Control Systems (Weeks 12–15, 8 sessions)
 
 | Session | Topic | PW Video | In-Class Focus |
 |---|---|---|---|
-| W11.S1 | Closed-loop systems & block diagram algebra | "Open vs. closed loop + block algebra" | Reduce 3 block diagrams; derive closed-loop TFs |
-| W11.S2 | Performance specs: SS error, transient, sensitivity | "What do we actually want from a controller?" | Compute SS error for type 0/1/2 systems |
-| W12.S1 | **Exam 2** (Laplace + response + freq response intro) | — | — |
-| W12.S2 | Stability — Routh-Hurwitz, characteristic equation | "Stability without solving the polynomial" | Apply Routh to 3 systems; find stable gain ranges |
-| W13.S1 | PID control — structure & effect of each term | "P, I, D — what each one fixes and breaks" | Tune P/PI/PID on simulated plant; observe trade-offs |
-| W13.S2 | PID tuning methods — Z-N, manual, model-based | "Three ways to tune PID" | Tune a real plant model 3 ways; compare performance |
-| W14.S1 | Root locus — sketching rules | "Root locus in 15 min" | Sketch RL for 4 plants; identify breakaway, asymptotes |
-| W14.S2 | Root locus design — gain selection, lead/lag intro | "Designing with root locus" | Design controllers to meet ζ/ω_n specs using RL |
-| W15.S1 | Stability margins from Bode (light) — GM, PM | "Gain & phase margin without the theory dump" | Read margins from Bode plots; relate to robustness |
-| W15.S2 | Practical considerations — saturation, anti-windup, noise | "What breaks PID in the real world" | Diagnose & fix 3 broken PID implementations |
+| W12.S1 | Closed-loop systems & block diagram algebra | "Open vs. closed loop + block algebra" | Reduce 3 block diagrams; derive closed-loop TFs |
+| W12.S2 | Performance specs: SS error, transient, sensitivity | "What do we actually want from a controller?" | Compute SS error for type 0/1/2 systems |
+| W13.S1 | Stability — Routh-Hurwitz, characteristic equation | "Stability without solving the polynomial" | Apply Routh to 3 systems; find stable gain ranges |
+| W13.S2 | PID control — structure & effect of each term | "P, I, D — what each one fixes and breaks" | Tune P/PI/PID on simulated plant; observe trade-offs |
+| W14.S1 | PID tuning methods — Z-N, manual, model-based | "Three ways to tune PID" | Tune a real plant model 3 ways; compare performance |
+| W14.S2 | Root locus — sketching rules | "Root locus in 15 min" | Sketch RL for 4 plants; identify breakaway, asymptotes |
+| W15.S1 | Root locus design — gain selection, lead/lag intro | "Designing with root locus" | Design controllers to meet ζ/ω_n specs using RL |
+| W15.S2 | Stability margins from Bode (light) — GM, PM | "Gain & phase margin without the theory dump" | Read margins from Bode plots; relate to robustness |
 
-### Unit 5 — Synthesis & Final (Week 16)
+### Module 5 — Synthesis & Final (Week 16)
 
 | Session | Topic | PW Video | In-Class Focus |
 |---|---|---|---|
@@ -119,9 +119,10 @@ Format: **W#.S#** = Week, Session. Each session has a 15–20 min pre-work video
 | Mechanical modeling | 4 lessons | 4 sessions | 0 |
 | Electrical + Electromechanical | 3 lessons | 2 sessions | −1 |
 | State-space | 2 lessons | 1 session | −1 |
-| Time-domain response | 4 lessons | 3 sessions | −1 |
+| Linearization | 1 lesson (front-loaded) | 1 session (moved inline to Module 2) | 0 (repositioned) |
+| Time-domain response | 4 lessons | 4 sessions (incl. MATLAB synthesis) | 0 |
 | Frequency response + Bode + Sys ID | 3 lessons | 2 sessions | −1 |
-| **Controls** | **5 lessons** (PID at high level) | **9 sessions** (PID + Routh + RL + margins + practical) | **+4** |
+| **Controls** | **5 lessons** (PID at high level) | **8 sessions** (PID + Routh + RL + margins) | **+3** |
 | Capstone synthesis | 1 lesson | 1 session | 0 |
 | Exams | 3 | 3 | 0 |
 
