@@ -7,7 +7,7 @@
 
 ## 1. Design Principles
 
-1. **Pre-work carries derivations and motivation.** Each session has a paired 15–20 min video that handles (a) the *why*, (b) the key derivation steps, and (c) one worked example. Students arrive primed.
+1. **Pre-work carries derivations and motivation.** Each session has a paired 15–20 min video that handles (a) the *why* and (b) the key derivation steps. A worked example occasionally gets its own dedicated pre-work video, but is the exception — most worked examples happen in class. Students arrive primed on the concept, not expected to have already practiced it.
 2. **Class time is guided problem solving in small groups.** Two-hour sessions structured as: 10 min recap/prework Q&A → 70 min group problem work (2–3 scaffolded problems) → 25 min instructor-led synthesis + extension → 15 min preview of next topic. Buffer for transitions baked in.
 3. **No standalone "math review" block.** ODEs, Laplace, and linearization are taught *inline* the first time they are needed — students who need a refresher use the Canvas prereq module on their own schedule.
 4. **Modeling depth ≥ controls depth.** Modeling unit is compressed but not gutted — mechanical, electrical, electromechanical remain core. Compression comes from removing the redundant front-loaded math review, not the modeling itself.
