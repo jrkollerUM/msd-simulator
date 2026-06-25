@@ -55,7 +55,7 @@ Format: **W#.S#** = Week, Session. Each session has a 15–20 min pre-work video
 
 | Session | Topic | PW Video | In-Class Focus |
 |---|---|---|---|
-| W1.S1 | Course intro + prereq diagnostic | (none — Canvas pre-course module instead) | Diagnostic + motivating demos + course logistics |
+| W1.S1 | Course intro + prereq diagnostic | "Welcome to ME 360: course intro, Canvas navigation, and Day 1 prereq assessment preview" — points students to the async prereq module | Diagnostic + motivating demos + course logistics |
 | W1.S2 | What's a dynamic system? ODE → response intuition | "From physics to ODEs to response" | Classify 3 systems; identify inputs/outputs/states |
 | W2.S1 | Linearization about an operating point | "Linearization in 15 min" | Linearize 3 nonlinear systems (pendulum, tank, motor) |
 | W2.S2 | Translational mechanical systems | "Springs, dampers, masses — modeling rules" | Derive EOM for 2-mass spring-damper chain |
