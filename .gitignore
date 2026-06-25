@@ -1,2 +1,5 @@
 # MATLAB reference files — local only, not published
 reference/
+
+# Course planning — belongs to the ME 360 redesign project, not this simulator repo
+CoursePlanning/
